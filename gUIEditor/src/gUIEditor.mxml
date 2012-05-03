@@ -6,10 +6,10 @@
 					   closing="closeWindowHandler(event)">
 	<fx:Script>
 		<![CDATA[
-			import com.macro.gui.editor.ComponentsPanel;
-			import com.macro.gui.editor.Inspector;
-			import com.macro.gui.editor.SkinEditor;
-			import com.macro.gui.editor.TreePanel;
+			import com.macro.gUI.editor.ComponentsPanel;
+			import com.macro.gUI.editor.Inspector;
+			import com.macro.gUI.editor.SkinEditor;
+			import com.macro.gUI.editor.TreePanel;
 			
 			import mx.collections.*;
 			import mx.core.UIComponent;
