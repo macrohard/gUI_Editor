@@ -1,8 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
-					   xmlns:s="library://ns.adobe.com/flex/spark" 
-					   xmlns:mx="library://ns.adobe.com/flex/mx">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   creationComplete="creationCompleteHandler(event)"
+					   closing="closeWindowHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.macro.gui.editor.ComponentsPanel;
+			import com.macro.gui.editor.Inspector;
+			import com.macro.gui.editor.SkinEditor;
+			import com.macro.gui.editor.TreePanel;
+			
+			import mx.collections.*;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.MenuEvent;
+			import mx.events.ResizeEvent;
+			import mx.managers.PopUpManager;
+
+			public var uiContainer:UIComponent;
+
+			public var mainContainer:Sprite;
+			
+			private var _skinEditor:SkinEditor;
+			
+			private var _componentsPanel:ComponentsPanel;
+			
+			private var _treePanel:TreePanel;
+			
+			private var _inspector:Inspector;
+
+			protected function menuItemClickHandler(e:MenuEvent):void
+			{
+				var key:String = e.item.@data;
+				switch(key)
+				{
+					case "exit":
+					{
+						this.exit();
+						break;
+					}
+					case "skins":
+					{
+						if (_skinEditor == null)
+							_skinEditor = new SkinEditor();
+						
+						PopUpManager.addPopUp(_skinEditor, this, true);
+						PopUpManager.centerPopUp(_skinEditor);
+						break;
+					}
+					case "component":
+					{
+						PopUpManager.addPopUp(_componentsPanel, this);
+						break;
+					}
+					case "tree":
+					{
+						PopUpManager.addPopUp(_treePanel, this);
+						break;
+					}
+					case "layout":
+					{
+						resetPanelLayout();
+						break;
+					}
+				}
+			}
+
+			protected function creationCompleteHandler(e:FlexEvent):void
+			{
+				uiContainer = new UIComponent();
+				uiContainer.x = 0;
+				uiContainer.y = 30;
+				uiContainer.percentWidth = 100;
+				uiContainer.percentHeight = 100;
+				addElement(uiContainer);
+
+				mainContainer = new Sprite();
+				uiContainer.addChild(mainContainer);
+
+				uiContainer.addEventListener(ResizeEvent.RESIZE, onResizeHandler);
+				
+				resetPanelLayout();
+			}
+			
+			private function resetPanelLayout():void
+			{
+				// 组件面板
+				if (_componentsPanel == null)
+					_componentsPanel = new ComponentsPanel();
+				_componentsPanel.x = this.width - _componentsPanel.width - 10;
+				_componentsPanel.y = 40;
+				PopUpManager.addPopUp(_componentsPanel, this);
+				
+				// 大纲面板
+				if (_treePanel == null)
+					_treePanel = new TreePanel();
+				_treePanel.x = _componentsPanel.x;
+				_treePanel.y = _componentsPanel.y + _componentsPanel.height + 10;
+				PopUpManager.addPopUp(_treePanel, this);
+				
+				// 初始化属性面板
+				if (_inspector == null)
+					_inspector = new Inspector();
+				_inspector.x = 10;
+				_inspector.y = this.height - _inspector.height - 40;
+				PopUpManager.addPopUp(_inspector, this);
+			}
+
+			protected function onResizeHandler(e:ResizeEvent):void
+			{
+				mainContainer.graphics.clear();
+				mainContainer.graphics.beginFill(0x70b2ee);
+				mainContainer.graphics.drawRect(0, 0, e.target.width, e.target.height);
+			}
+			
+			protected function closeWindowHandler(e:Event):void
+			{
+//				e.preventDefault();
+			}
+		]]>
+	</fx:Script>
+
+	<mx:MenuBar id="topMenuBar" width="100%" height="30" itemClick="menuItemClickHandler(event)"
+				labelField="@label">
+		<fx:XMLList>
+			<menuitem label="文件">
+				<menuitem label="新建" data="create"/>
+				<menuitem label="保存" data="save"/>
+				<menuitem label="导出AS" data="export"/>
+				<menuitem type="separator"/>
+				<menuitem label="退出" data="exit"/>
+			</menuitem>
+			<menuitem label="查看">
+				<menuitem label="组件面板" data="component"/>
+				<menuitem label="大纲面板" data="tree"/>
+				<menuitem label="属性面板" data="properties"/>
+				<menuitem type="separator"/>
+				<menuitem label="皮肤管理器" data="skins"/>
+				<menuitem label="资源管理器" data="resources" enabled="false"/>
+				<menuitem type="separator"/>
+				<menuitem label="重置面板" data="layout"/>
+			</menuitem>
+		</fx:XMLList>
+	</mx:MenuBar>
+
 </s:WindowedApplication>

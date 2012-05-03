@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="650" height="150" close="closeHandler();" title="属性"
+			   windowMove="windowMoveHandler(event);">
+	<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			import spark.events.TitleWindowBoundsEvent;
+			
+			private function closeHandler():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function windowMoveHandler(e:TitleWindowBoundsEvent):void
+			{
+				if (this.x < 0)
+				{
+					this.x = 0;
+				}
+				if (this.y < 30)
+				{
+					this.y = 30;
+				}
+				
+				if (this.x + this.width > this.parent.width)
+				{
+					this.x = this.parent.width - this.width;
+				}
+				if (this.y + this.height > this.parent.height)
+				{
+					this.y = this.parent.height - this.height;
+				}
+			}
+		]]>
+	</fx:Script>
+</s:TitleWindow>
