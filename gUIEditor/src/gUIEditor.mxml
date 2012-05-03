@@ -2,12 +2,10 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
 					   xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   creationComplete="creationCompleteHandler(event)"
-					   closing="closeWindowHandler(event)">
+					   closing="closeWindowHandler(event)"
+					   creationComplete="creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
-			import com.flexponential.ResizableTitleWindow;
-			import com.flexponential.ResizableTitleWindowSkin;
 			import com.macro.gUI.editor.ComponentsPanel;
 			import com.macro.gUI.editor.Inspector;
 			import com.macro.gUI.editor.SkinEditor;
@@ -25,17 +23,17 @@
 			public var mainContainer:Sprite;
 			
 			private var _skinEditor:SkinEditor;
-			
+
 			private var _componentsPanel:ComponentsPanel;
-			
+
 			private var _treePanel:TreePanel;
-			
+
 			private var _inspector:Inspector;
 
 			protected function menuItemClickHandler(e:MenuEvent):void
 			{
 				var key:String = e.item.@data;
-				switch(key)
+				switch (key)
 				{
 					case "exit":
 					{
@@ -44,11 +42,12 @@
 					}
 					case "skins":
 					{
-						if (_skinEditor == null)
+						if (_skinEditor == null || _skinEditor.closed)
+						{
 							_skinEditor = new SkinEditor();
-						
-						PopUpManager.addPopUp(_skinEditor, this, true);
-						PopUpManager.centerPopUp(_skinEditor);
+							_skinEditor.open();
+						}
+						_skinEditor.orderToFront();
 						break;
 					}
 					case "component":
@@ -76,16 +75,16 @@
 				uiContainer.y = 30;
 				uiContainer.percentWidth = 100;
 				uiContainer.percentHeight = 100;
-				addElement(uiContainer);
 
 				mainContainer = new Sprite();
 				uiContainer.addChild(mainContainer);
 
 				uiContainer.addEventListener(ResizeEvent.RESIZE, onResizeHandler);
-				
+				this.addElement(uiContainer);
+
 				resetPanelLayout();
 			}
-			
+
 			private function resetPanelLayout():void
 			{
 				var t:int = 40;
@@ -93,40 +92,31 @@
 				var gap:int = 10;
 				var w:int = 300;
 				var h:int = 150;
-				
+
 				// 总高度 - 顶部留空 - 底部留空 - 间距
 				var ph:int = (this.height - t - b - gap) >> 1;
-				
+
 				// 组件面板
 				if (_componentsPanel == null)
-				{
 					_componentsPanel = new ComponentsPanel();
-					_componentsPanel.setStyle("skinClass", ResizableTitleWindowSkin);
-				}
 				_componentsPanel.width = w;
 				_componentsPanel.height = ph;
 				_componentsPanel.x = this.width - _componentsPanel.width - gap;
 				_componentsPanel.y = t;
 				PopUpManager.addPopUp(_componentsPanel, this);
-				
+
 				// 大纲面板
 				if (_treePanel == null)
-				{
 					_treePanel = new TreePanel();
-					_treePanel.setStyle("skinClass", ResizableTitleWindowSkin);
-				}
 				_treePanel.width = w;
 				_treePanel.height = ph;
 				_treePanel.x = _componentsPanel.x;
 				_treePanel.y = _componentsPanel.y + _componentsPanel.height + gap;
 				PopUpManager.addPopUp(_treePanel, this);
-				
+
 				// 初始化属性面板
 				if (_inspector == null)
-				{
 					_inspector = new Inspector();
-					_inspector.setStyle("skinClass", ResizableTitleWindowSkin);
-				}
 				_inspector.width = _componentsPanel.x - gap * 2;
 				_inspector.height = h;
 				_inspector.x = gap;
