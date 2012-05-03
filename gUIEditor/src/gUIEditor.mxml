@@ -12,16 +12,17 @@
 			import com.macro.gUI.editor.TreePanel;
 			
 			import mx.collections.*;
+			import mx.controls.Alert;
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			import mx.events.MenuEvent;
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
 
-			public var uiContainer:UIComponent;
-
-			public var mainContainer:Sprite;
+			public var gUIRoot:Sprite;
 			
+			private var _uiContainer:UIComponent;
+
 			private var _skinEditor:SkinEditor;
 
 			private var _componentsPanel:ComponentsPanel;
@@ -60,6 +61,11 @@
 						PopUpManager.addPopUp(_treePanel, this);
 						break;
 					}
+					case "properties":
+					{
+						PopUpManager.addPopUp(_inspector, this);
+						break;
+					}
 					case "layout":
 					{
 						resetPanelLayout();
@@ -70,17 +76,17 @@
 
 			protected function creationCompleteHandler(e:FlexEvent):void
 			{
-				uiContainer = new UIComponent();
-				uiContainer.x = 0;
-				uiContainer.y = 30;
-				uiContainer.percentWidth = 100;
-				uiContainer.percentHeight = 100;
+				_uiContainer = new UIComponent();
+				_uiContainer.x = 0;
+				_uiContainer.y = 30;
+				_uiContainer.percentWidth = 100;
+				_uiContainer.percentHeight = 100;
 
-				mainContainer = new Sprite();
-				uiContainer.addChild(mainContainer);
+				gUIRoot = new Sprite();
+				_uiContainer.addChild(gUIRoot);
 
-				uiContainer.addEventListener(ResizeEvent.RESIZE, onResizeHandler);
-				this.addElement(uiContainer);
+				_uiContainer.addEventListener(ResizeEvent.RESIZE, onResizeHandler);
+				this.addElement(_uiContainer);
 
 				resetPanelLayout();
 			}
@@ -126,9 +132,9 @@
 
 			protected function onResizeHandler(e:ResizeEvent):void
 			{
-				mainContainer.graphics.clear();
-				mainContainer.graphics.beginFill(0x70b2ee);
-				mainContainer.graphics.drawRect(0, 0, e.target.width, e.target.height);
+				gUIRoot.graphics.clear();
+				gUIRoot.graphics.beginFill(0x70b2ee);
+				gUIRoot.graphics.drawRect(0, 0, e.target.width, e.target.height);
 			}
 			
 			protected function closeWindowHandler(e:Event):void
@@ -157,6 +163,10 @@
 				<menuitem label="资源管理器" data="resources" enabled="false"/>
 				<menuitem type="separator"/>
 				<menuitem label="重置面板" data="layout"/>
+			</menuitem>
+			<menuitem label="关于">
+				<menuitem label="帮助" data="help"/>
+				<menuitem label="版本号：0.5.0"/>
 			</menuitem>
 		</fx:XMLList>
 	</mx:MenuBar>
