@@ -6,6 +6,8 @@
 					   closing="closeWindowHandler(event)">
 	<fx:Script>
 		<![CDATA[
+			import com.flexponential.ResizableTitleWindow;
+			import com.flexponential.ResizableTitleWindowSkin;
 			import com.macro.gUI.editor.ComponentsPanel;
 			import com.macro.gUI.editor.Inspector;
 			import com.macro.gUI.editor.SkinEditor;
@@ -86,25 +88,49 @@
 			
 			private function resetPanelLayout():void
 			{
+				var t:int = 40;
+				var b:int = 40;
+				var gap:int = 10;
+				var w:int = 300;
+				var h:int = 150;
+				
+				// 总高度 - 顶部留空 - 底部留空 - 间距
+				var ph:int = (this.height - t - b - gap) >> 1;
+				
 				// 组件面板
 				if (_componentsPanel == null)
+				{
 					_componentsPanel = new ComponentsPanel();
-				_componentsPanel.x = this.width - _componentsPanel.width - 10;
-				_componentsPanel.y = 40;
+					_componentsPanel.setStyle("skinClass", ResizableTitleWindowSkin);
+				}
+				_componentsPanel.width = w;
+				_componentsPanel.height = ph;
+				_componentsPanel.x = this.width - _componentsPanel.width - gap;
+				_componentsPanel.y = t;
 				PopUpManager.addPopUp(_componentsPanel, this);
 				
 				// 大纲面板
 				if (_treePanel == null)
+				{
 					_treePanel = new TreePanel();
+					_treePanel.setStyle("skinClass", ResizableTitleWindowSkin);
+				}
+				_treePanel.width = w;
+				_treePanel.height = ph;
 				_treePanel.x = _componentsPanel.x;
-				_treePanel.y = _componentsPanel.y + _componentsPanel.height + 10;
+				_treePanel.y = _componentsPanel.y + _componentsPanel.height + gap;
 				PopUpManager.addPopUp(_treePanel, this);
 				
 				// 初始化属性面板
 				if (_inspector == null)
+				{
 					_inspector = new Inspector();
-				_inspector.x = 10;
-				_inspector.y = this.height - _inspector.height - 40;
+					_inspector.setStyle("skinClass", ResizableTitleWindowSkin);
+				}
+				_inspector.width = _componentsPanel.x - gap * 2;
+				_inspector.height = h;
+				_inspector.x = gap;
+				_inspector.y = this.height - _inspector.height - b;
 				PopUpManager.addPopUp(_inspector, this);
 			}
 
