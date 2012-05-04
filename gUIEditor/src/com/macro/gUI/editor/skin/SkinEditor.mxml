@@ -1,5 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="640" height="480" title="皮肤管理器" showStatusBar="false">
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="640" height="480" creationComplete="creationCompleteHandler(event)"
+		  showStatusBar="false" title="皮肤管理器">
+	<fx:Declarations>
+		<s:XMLListCollection id="skins" />
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.XMLListCollection;
+			import mx.events.FlexEvent;
+			
+			import spark.events.GridEvent;
+
+
+			protected function creationCompleteHandler(e:FlexEvent):void
+			{
+				skins.addItem(<item key="IMAGE1" rect={new Rectangle()} image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE2" rect={new Rectangle()} image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE3" rect={new Rectangle()} image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE4" rect={new Rectangle()} image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE5" rect={new Rectangle()} image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE6" rect={new Rectangle()} image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE7" rect={new Rectangle()} image="assets/screen.png"/>);
+			}
+			
+			protected function itemDoubleClickHandler(e:GridEvent):void
+			{
+				if (e.rowIndex != -1)
+				{
+					// TODO 打开编辑窗口
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<s:DataGrid id="dataGrid" x="0" y="0" width="100%" height="100%" doubleClickEnabled="true"
+				gridDoubleClick="itemDoubleClickHandler(event)" rowHeight="50" dataProvider="{skins}">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="@key" headerText="皮肤常量" sortable="false">
+				</s:GridColumn>
+				<s:GridColumn dataField="@rect" headerText="九切参数" sortable="false">
+				</s:GridColumn>
+				<s:GridColumn dataField="@image" headerText="预览"
+							  itemRenderer="com.macro.gUI.editor.skin.PreviewCell" sortable="false">
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
 </s:Window>
