@@ -60,6 +60,10 @@ protected function menuItemClickHandler(e:MenuEvent):void
 		{
 			break;
 		}
+		case "clearProject":
+		{
+			break;
+		}
 		case "exportActionScript":
 		{
 			break;

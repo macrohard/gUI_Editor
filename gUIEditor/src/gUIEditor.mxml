@@ -14,6 +14,7 @@
 				<menuitem type="separator"/>
 				<menuitem label="新建项目" data="createProject"/>
 				<menuitem label="打开项目" data="openProject"/>
+				<menuitem label="清理项目资源" data="clearProject"/>
 				<menuitem type="separator"/>
 				<menuitem label="导出界面" data="exportActionScript"/>
 				<menuitem label="导出皮肤样式" data="exportSkinStyle"/>
