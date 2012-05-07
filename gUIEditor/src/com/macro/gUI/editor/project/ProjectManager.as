@@ -1,12 +1,19 @@
 package com.macro.gUI.editor.project
 {
+	import com.macro.gUI.GameUI;
+	
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import flash.geom.Rectangle;
+	import flash.utils.ByteArray;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
+	import mx.utils.Base64Decoder;
+	import mx.utils.Base64Encoder;
 
 
 	/**
@@ -21,6 +28,8 @@ package com.macro.gUI.editor.project
 		private var _skinConfig:SkinConfiguration = new SkinConfiguration();
 		
 		private var _styleConfig:StyleConfiguration = new StyleConfiguration();
+		
+		private var _configFile:File;
 
 		private var _skinsDirectory:File;
 
@@ -33,12 +42,26 @@ package com.macro.gUI.editor.project
 		{
 		}
 		
+		private static var _inst:ProjectManager = new ProjectManager();
+		
+		public static function get inst():ProjectManager
+		{
+			return _inst;
+		}
+		
 		public function get workUrl():String
 		{
-			if (_skinsDirectory)
-				return _skinsDirectory.parent.nativePath;
+			if (_configFile)
+				return _configFile.parent.nativePath;
 			
 			return null;
+		}
+		
+		
+		public function init(root:Sprite):void
+		{
+			// TODO 新建界面时得到宽高
+			GameUI.init(root, 800, 600);
 		}
 
 
@@ -118,31 +141,55 @@ package com.macro.gUI.editor.project
 
 		private function setProject(configF:File, skinsD:File, assetsD:File, interfaceD:File):void
 		{
+			_configFile = configF;
 			_skinsDirectory = skinsD;
 			_assetsDirectory = assetsD;
 			_interfacesDirectory = interfaceD;
 			
+			readConfig();
+			saveAppConfig();
+		}
+		
+		private function readConfig():void
+		{
 			var fileStream:FileStream = new FileStream(); 
-			// 读取配置
-			fileStream.open(configF, FileMode.READ); 
+			fileStream.open(_configFile, FileMode.READ); 
 			var configXML:XML = XML(fileStream.readUTFBytes(fileStream.bytesAvailable)); 
 			fileStream.close();
 			
-			_skinConfig.setConfig(configXML.hasOwnProperty("skins") ? configXML.skins : null);
-			_styleConfig.setConfig(configXML.hasOwnProperty("styles") ? configXML.styles : null);
-			
+			_skinConfig.configXML = configXML.hasOwnProperty("skins") ? configXML.skins : null;
+			_styleConfig.configXML = configXML.hasOwnProperty("styles") ? configXML.styles : null;
+		}
+		
+		public function saveConfig():void
+		{
+			var config:XML = new XML();
+			config.appendChild(_skinConfig.configXML);
+			config.appendChild(_styleConfig.configXML);
+			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n'; 
+			outputString += config.toXMLString(); 
+			var fileStream:FileStream = new FileStream();
+			fileStream.open(_configFile, FileMode.WRITE);
+			fileStream.writeUTFBytes(outputString); 
+			fileStream.close(); 
+		}
+		
+		
+		public function saveAppConfig():void
+		{
 			// 保存打开项目到工程配置文件以便下次自动打开
-			var prefsXML:XML = <prefs><workUrl>{configF.parent.nativePath}</workUrl></prefs>; 
+			var prefsXML:XML = <prefs><workUrl>{_configFile.parent.nativePath}</workUrl></prefs>; 
 			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n'; 
 			outputString += prefsXML.toXMLString(); 
 			
 			var appConfig:File = File.applicationStorageDirectory.resolvePath("appConfig.xml");
+			var fileStream:FileStream = new FileStream();
 			fileStream.open(appConfig, FileMode.WRITE);
 			fileStream.writeUTFBytes(outputString); 
 			fileStream.close(); 
 		}
 		
-		public function loadConfig():void
+		public function loadAppConfig():void
 		{
 			var appConfig:File = File.applicationStorageDirectory.resolvePath("appConfig.xml");
 			if (appConfig.exists)

@@ -17,13 +17,13 @@
 
 			protected function creationCompleteHandler(e:FlexEvent):void
 			{
-				skins.addItem(<item key="IMAGE1" rect={new Rectangle()} image="assets/screen.png"/>);
-				skins.addItem(<item key="IMAGE2" rect={new Rectangle()} image="assets/screen.png"/>);
-				skins.addItem(<item key="IMAGE3" rect={new Rectangle()} image="assets/screen.png"/>);
-				skins.addItem(<item key="IMAGE4" rect={new Rectangle()} image="assets/screen.png"/>);
-				skins.addItem(<item key="IMAGE5" rect={new Rectangle()} image="assets/screen.png"/>);
-				skins.addItem(<item key="IMAGE6" rect={new Rectangle()} image="assets/screen.png"/>);
-				skins.addItem(<item key="IMAGE7" rect={new Rectangle()} image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE1" rect={new Rectangle()} align="0x11" image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE2" rect={new Rectangle()} align="0x11" image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE3" rect={new Rectangle()} align="0x11" image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE4" rect={new Rectangle()} align="0x11" image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE5" rect={new Rectangle()} align="0x11" image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE6" rect={new Rectangle()} align="0x11" image="assets/screen.png"/>);
+				skins.addItem(<item key="IMAGE7" rect={new Rectangle()} align="0x11" image="assets/screen.png"/>);
 			}
 			
 			protected function itemDoubleClickHandler(e:GridEvent):void
@@ -43,6 +43,8 @@
 				<s:GridColumn dataField="@key" headerText="皮肤常量" sortable="false">
 				</s:GridColumn>
 				<s:GridColumn dataField="@rect" headerText="九切参数" sortable="false">
+				</s:GridColumn>
+				<s:GridColumn dataField="@align" headerText="对齐方式" sortable="false">
 				</s:GridColumn>
 				<s:GridColumn dataField="@image" headerText="预览"
 							  itemRenderer="com.macro.gUI.editor.skin.PreviewCell" sortable="false">

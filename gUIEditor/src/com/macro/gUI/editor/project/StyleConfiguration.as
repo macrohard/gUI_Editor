@@ -6,9 +6,16 @@ package com.macro.gUI.editor.project
 		{
 		}
 		
-		public function setConfig(xml:XML):void
+		private var _config:XML;
+		
+		public function set configXML(value:XML):void
 		{
-			
+			_config = value == null ? <styles/> : value;
+		}
+		
+		public function get configXML():XML
+		{
+			return _config;
 		}
 	}
 }

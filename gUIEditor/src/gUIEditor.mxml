@@ -40,18 +40,12 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-			
 			import com.macro.gUI.editor.ComponentsPanel;
 			import com.macro.gUI.editor.Inspector;
 			import com.macro.gUI.editor.TreePanel;
 			import com.macro.gUI.editor.project.ProjectManager;
 			import com.macro.gUI.editor.skin.SkinEditor;
 			import com.macro.gUI.editor.style.StyleEditor;
-			
-			import flash.desktop.NativeApplication;
-			import flash.display.Sprite;
-			import flash.events.Event;
-			import flash.filesystem.File;
 			
 			import mx.collections.*;
 			import mx.controls.Alert;
@@ -77,9 +71,6 @@
 			private var _treePanel:TreePanel = new TreePanel();
 			
 			private var _inspector:Inspector = new Inspector();
-			
-			
-			private var _projectManager:ProjectManager = new ProjectManager();
 			
 			
 			protected function menuItemClickHandler(e:MenuEvent):void
@@ -115,7 +106,7 @@
 					}
 					case "clearProject":
 					{
-						_projectManager.clearProjectResources();
+						ProjectManager.inst.clearProjectResources();
 						break;
 					}
 					case "exportActionScript":
@@ -207,7 +198,7 @@
 				var ver:String = "版本号：" + appXml.ns::versionNumber;
 				menuDefines[2].appendChild(<menuitem label={ver}/>);
 				
-				_projectManager.loadConfig();
+				ProjectManager.inst.loadAppConfig();
 				setStatusText();
 			}
 			
@@ -272,14 +263,14 @@
 						{
 							if (e.detail == Alert.OK)
 							{
-								_projectManager.createProject(tmp);
+								ProjectManager.inst.createProject(tmp);
 								setStatusText();
 							}
 						});
 					}
 					else
 					{
-						_projectManager.createProject(tmp);
+						ProjectManager.inst.createProject(tmp);
 						setStatusText();
 					}
 				});
@@ -292,7 +283,7 @@
 				tmp.addEventListener(Event.SELECT, function(e:Event):void
 				{
 					tmp.removeEventListener(Event.SELECT, arguments.callee);
-					if (_projectManager.openProject(tmp))
+					if (ProjectManager.inst.openProject(tmp))
 					{
 						setStatusText();
 					}
@@ -302,7 +293,7 @@
 						{
 							if (e.detail == Alert.YES)
 							{
-								_projectManager.createProject(tmp);
+								ProjectManager.inst.createProject(tmp);
 								setStatusText();
 							}
 						});
@@ -312,7 +303,7 @@
 			
 			private function setStatusText():void
 			{
-				var url:String = _projectManager.workUrl;
+				var url:String = ProjectManager.inst.workUrl;
 				if (url != null)
 				{
 					this.statusText.text = "工作目录：" + url;
