@@ -14,11 +14,11 @@
 				<menuitem type="separator"/>
 				<menuitem label="新建项目" data="createProject"/>
 				<menuitem label="打开项目" data="openProject"/>
-				<menuitem label="清理项目资源" data="clearProject"/>
+				<menuitem label="清理项目资源" data="clearProject" enabled="false"/>
 				<menuitem type="separator"/>
 				<menuitem label="导出界面" data="exportActionScript"/>
 				<menuitem label="导出皮肤样式" data="exportSkinStyle"/>
-				<menuitem label="导出资源包" data="exportResource"/>
+				<menuitem label="导出资源包" data="exportResource" enabled="false"/>
 				<menuitem type="separator"/>
 				<menuitem label="退出" data="exit"/>
 			</menuitem>
@@ -34,11 +34,298 @@
 				<menuitem label="重置面板" data="layout"/>
 			</menuitem>
 			<menuitem label="关于">
-				<menuitem label="帮助" data="help"/>
+				<menuitem label="帮助" data="help" enabled="false"/>
 			</menuitem>
 		</fx:XMLList>
 	</fx:Declarations>
-	<fx:Script source="gUIEditor.as" />
+	<fx:Script>
+		<![CDATA[
+			
+			import com.macro.gUI.editor.ComponentsPanel;
+			import com.macro.gUI.editor.Inspector;
+			import com.macro.gUI.editor.TreePanel;
+			import com.macro.gUI.editor.project.ProjectManager;
+			import com.macro.gUI.editor.skin.SkinEditor;
+			import com.macro.gUI.editor.style.StyleEditor;
+			
+			import flash.desktop.NativeApplication;
+			import flash.display.Sprite;
+			import flash.events.Event;
+			import flash.filesystem.File;
+			
+			import mx.collections.*;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.MenuEvent;
+			import mx.events.ResizeEvent;
+			import mx.managers.PopUpManager;
+			
+			
+			
+			public var gUIRoot:Sprite;
+			
+			private var _uiContainer:UIComponent;
+			
+			private var _skinEditor:SkinEditor;
+			
+			private var _styleEditor:StyleEditor;
+			
+			private var _componentsPanel:ComponentsPanel = new ComponentsPanel();
+			
+			private var _treePanel:TreePanel = new TreePanel();
+			
+			private var _inspector:Inspector = new Inspector();
+			
+			
+			private var _projectManager:ProjectManager = new ProjectManager();
+			
+			
+			protected function menuItemClickHandler(e:MenuEvent):void
+			{
+				var key:String = e.item.@data;
+				switch (key)
+				{
+					case "new":
+					{
+						break;
+					}
+					case "open":
+					{
+						break;
+					}
+					case "save":
+					{
+						break;
+					}
+					case "saveAs":
+					{
+						break;
+					}
+					case "createProject":
+					{
+						createProject();
+						break;
+					}
+					case "openProject":
+					{
+						openProject();
+						break;
+					}
+					case "clearProject":
+					{
+						_projectManager.clearProjectResources();
+						break;
+					}
+					case "exportActionScript":
+					{
+						break;
+					}
+					case "exportSkinStyle":
+					{
+						break;
+					}
+					case "exportResource":
+					{
+						break;
+					}
+					case "exit":
+					{
+						this.exit();
+						break;
+					}
+					case "component":
+					{
+						PopUpManager.addPopUp(_componentsPanel, this);
+						break;
+					}
+					case "tree":
+					{
+						PopUpManager.addPopUp(_treePanel, this);
+						break;
+					}
+					case "properties":
+					{
+						PopUpManager.addPopUp(_inspector, this);
+						break;
+					}
+					case "skins":
+					{
+						if (_skinEditor == null || _skinEditor.closed)
+						{
+							_skinEditor = new SkinEditor();
+							_skinEditor.open();
+						}
+						_skinEditor.orderToFront();
+						break;
+					}
+					case "styles":
+					{
+						if (_styleEditor == null || _styleEditor.closed)
+						{
+							_styleEditor = new StyleEditor();
+							_styleEditor.open();
+						}
+						_styleEditor.orderToFront();
+						break;
+					}
+					case "resources":
+					{
+						break;
+					}
+					case "layout":
+					{
+						resetPanelLayout();
+						break;
+					}
+					case "help":
+					{
+						break;
+					}
+				}
+			}
+			
+			protected function creationCompleteHandler(e:FlexEvent):void
+			{
+				_uiContainer = new UIComponent();
+				_uiContainer.x = 0;
+				_uiContainer.y = 30;
+				_uiContainer.percentWidth = 100;
+				_uiContainer.percentHeight = 100;
+				
+				gUIRoot = new Sprite();
+				_uiContainer.addChild(gUIRoot);
+				
+				_uiContainer.addEventListener(ResizeEvent.RESIZE, onResizeHandler);
+				this.addElement(_uiContainer);
+				
+				resetPanelLayout();
+				
+				var appXml:XML = NativeApplication.nativeApplication.applicationDescriptor;
+				var ns:Namespace = appXml.namespace();
+				var ver:String = "版本号：" + appXml.ns::versionNumber;
+				menuDefines[2].appendChild(<menuitem label={ver}/>);
+				
+				_projectManager.loadConfig();
+				setStatusText();
+			}
+			
+			
+			private function resetPanelLayout():void
+			{
+				var t:int = 40;
+				var b:int = 40;
+				var gap:int = 10;
+				var w:int = 300;
+				var h:int = 150;
+				
+				// 总高度 - 顶部留空 - 底部留空 - 间距
+				var ph:int = (this.height - t - b - gap) >> 1;
+				
+				// 组件面板
+				_componentsPanel.width = w;
+				_componentsPanel.height = ph;
+				_componentsPanel.x = this.width - _componentsPanel.width - gap;
+				_componentsPanel.y = t;
+				PopUpManager.addPopUp(_componentsPanel, this);
+				
+				// 大纲面板
+				_treePanel.width = w;
+				_treePanel.height = ph;
+				_treePanel.x = _componentsPanel.x;
+				_treePanel.y = _componentsPanel.y + _componentsPanel.height + gap;
+				PopUpManager.addPopUp(_treePanel, this);
+				
+				// 初始化属性面板
+				_inspector.width = _componentsPanel.x - gap * 2;
+				_inspector.height = h;
+				_inspector.x = gap;
+				_inspector.y = this.height - _inspector.height - b;
+				PopUpManager.addPopUp(_inspector, this);
+			}
+			
+			
+			protected function onResizeHandler(e:ResizeEvent):void
+			{
+				gUIRoot.graphics.clear();
+				gUIRoot.graphics.beginFill(0x70b2ee);
+				gUIRoot.graphics.drawRect(0, 0, e.target.width, e.target.height);
+			}
+			
+			
+			protected function closeWindowHandler(e:Event):void
+			{
+				//				e.preventDefault();
+			}
+			
+			private function createProject():void
+			{
+				var tmp:File = File.documentsDirectory;
+				tmp.browseForDirectory("请选择新项目的工作目录");
+				tmp.addEventListener(Event.SELECT, function(e:Event):void
+				{
+					tmp.removeEventListener(Event.SELECT, arguments.callee);
+					if (tmp.getDirectoryListing().length > 0)
+					{
+						Alert.show("目录不为空，在此目录中新建项目将覆盖旧文件，你确定吗？", "警告", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void
+						{
+							if (e.detail == Alert.OK)
+							{
+								_projectManager.createProject(tmp);
+								setStatusText();
+							}
+						});
+					}
+					else
+					{
+						_projectManager.createProject(tmp);
+						setStatusText();
+					}
+				});
+			}
+			
+			private function openProject():void
+			{
+				var tmp:File = File.documentsDirectory;
+				tmp.browseForDirectory("请选择项目的工作目录");
+				tmp.addEventListener(Event.SELECT, function(e:Event):void
+				{
+					tmp.removeEventListener(Event.SELECT, arguments.callee);
+					if (_projectManager.openProject(tmp))
+					{
+						setStatusText();
+					}
+					else
+					{
+						Alert.show("项目打开失败，将在此目录中创建新项目，你确定吗？", "警告", Alert.YES | Alert.NO, null, function(e:CloseEvent):void
+						{
+							if (e.detail == Alert.YES)
+							{
+								_projectManager.createProject(tmp);
+								setStatusText();
+							}
+						});
+					}
+				});
+			}
+			
+			private function setStatusText():void
+			{
+				var url:String = _projectManager.workUrl;
+				if (url != null)
+				{
+					this.statusText.text = "工作目录：" + url;
+				}
+				else
+				{
+					this.statusText.text = "没有打开的项目";
+				}
+			}
+
+			
+		]]>
+	</fx:Script>
 
 	<mx:MenuBar id="topMenuBar" width="100%" height="30" dataProvider="{menuDefines}"
 				itemClick="menuItemClickHandler(event)" labelField="@label"/>
