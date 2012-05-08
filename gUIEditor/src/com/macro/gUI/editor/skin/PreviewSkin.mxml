@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<flexponential:ResizableTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+									xmlns:s="library://ns.adobe.com/flex/spark"
+									xmlns:mx="library://ns.adobe.com/flex/mx"
+									xmlns:flexponential="com.flexponential.*"
+									width="640" height="480" close="closeHandler();"
+									creationComplete="creationCompleteHandler(event)" resize="resizeHandler(event)" title="皮肤预览">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayList;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			import mx.managers.PopUpManager;
+			
+			
+			private var _host:SkinEditor;
+			private var _index:int;
+			private var _data:Object;
+			
+			private var _horizontal:ArrayList = new ArrayList([{label:"LEFT", value:0x01}, {label:"CENTER", value:0x02}, {label:"RIGHT", value:0x04}]);
+			private var _vertical:ArrayList = new ArrayList([{label:"TOP", value:0x10}, {label:"MIDDLE", value:0x20}, {label:"BOTTOM", value:0x40}]);
+			
+			private function closeHandler():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				cmbAlignH.dataProvider = _horizontal;
+				cmbAlignV.dataProvider = _vertical;
+				
+				this.title += ": " + _data.key;
+				numLeft.value = _data.rect.left;
+				numTop.value = _data.rect.top;
+				numRight.value = _data.rect.right;
+				numBottom.value = _data.rect.bottom;
+			}
+			
+			protected function resizeHandler(e:ResizeEvent):void
+			{
+				imgPreview.width = e.target.width - 20;
+				imgPreview.height = e.target.height - 120;
+			}
+			
+			public function init(host:SkinEditor, index:int, data:Object):void
+			{
+				_host = host;
+				_index = index;
+				_data = data;
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Group width="100%" height="100%" clipAndEnableScrolling="true">
+		<s:NumericStepper id="numLeft" x="30" y="40" width="60" maximum="1000" minimum="0"/>
+		<s:NumericStepper id="numRight" x="213" y="40" width="60" maximum="1000" minimum="0"/>
+		<s:NumericStepper id="numTop" x="118" y="40" width="60" maximum="1000" minimum="0"/>
+		<s:NumericStepper id="numBottom" x="301" y="40" width="60" maximum="1000" minimum="0"/>
+		
+		<s:CheckBox id="chkGuideLine" x="383" y="42" label="辅助线可见" selected="true"/>
+		<s:DropDownList id="cmbAlignH" x="65" y="10" width="90"/>
+		<s:DropDownList id="cmbAlignV" x="249" y="10" width="90"/>
+		<s:Button id="btnOpen" x="480" y="10" label="打开..."/>
+		<s:Button id="btnOk" x="558" y="10" label="确定"/>
+		
+		<s:Image id="imgPreview" x="10" y="70" backgroundColor="#000000"/>
+		
+		<s:Label x="10" y="46" text="左"/>
+		<s:Label x="193" y="46" text="右"/>
+		<s:Label x="98" y="46" text="上"/>
+		<s:Label x="281" y="46" text="下"/>
+		<s:Label x="193" y="16" text="垂直对齐"/>
+		<s:Label x="9" y="16" text="水平对齐"/>
+	</s:Group>
+</flexponential:ResizableTitleWindow>

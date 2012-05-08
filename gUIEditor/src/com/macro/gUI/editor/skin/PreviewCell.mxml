@@ -8,7 +8,7 @@
 			override public function prepare(hasBeenRecycled:Boolean):void
 			{
 				if (data != null)
-					image.source = data.@image.toString();
+					image.source = data.image;
 			}
 		]]>
 	</fx:Script>

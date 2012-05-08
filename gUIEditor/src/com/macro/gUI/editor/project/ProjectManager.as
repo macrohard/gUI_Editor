@@ -1,7 +1,7 @@
 package com.macro.gUI.editor.project
 {
 	import com.macro.gUI.GameUI;
-	
+
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.filesystem.File;
@@ -9,7 +9,7 @@ package com.macro.gUI.editor.project
 	import flash.filesystem.FileStream;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
-	
+
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	import mx.utils.Base64Decoder;
@@ -25,10 +25,10 @@ package com.macro.gUI.editor.project
 	public class ProjectManager
 	{
 
-		private var _skinConfig:SkinConfiguration = new SkinConfiguration();
-		
-		private var _styleConfig:StyleConfiguration = new StyleConfiguration();
-		
+		public var skinConfig:SkinConfiguration = new SkinConfiguration();
+
+		public var styleConfig:StyleConfiguration = new StyleConfiguration();
+
 		private var _configFile:File;
 
 		private var _skinsDirectory:File;
@@ -36,28 +36,28 @@ package com.macro.gUI.editor.project
 		private var _assetsDirectory:File;
 
 		private var _interfacesDirectory:File;
-		
-		
+
+
 		public function ProjectManager()
 		{
 		}
-		
+
 		private static var _inst:ProjectManager = new ProjectManager();
-		
+
 		public static function get inst():ProjectManager
 		{
 			return _inst;
 		}
-		
+
 		public function get workUrl():String
 		{
 			if (_configFile)
 				return _configFile.parent.nativePath;
-			
+
 			return null;
 		}
-		
-		
+
+
 		public function init(root:Sprite):void
 		{
 			// TODO 新建界面时得到宽高
@@ -70,7 +70,7 @@ package com.macro.gUI.editor.project
 			var configFile:File = file.resolvePath("config.xml");
 			if (!configFile.exists)
 			{
-				var fileStream:FileStream = new FileStream(); 
+				var fileStream:FileStream = new FileStream();
 				fileStream.open(configFile, FileMode.WRITE);
 				fileStream.writeUTFBytes("");
 				fileStream.close();
@@ -105,7 +105,7 @@ package com.macro.gUI.editor.project
 			{
 				throw new Error("存在同名的文件，无法创建目录！");
 			}
-			
+
 			setProject(configFile, skinDirectory, assetDirectory, interfaceDirectory);
 		}
 
@@ -145,60 +145,61 @@ package com.macro.gUI.editor.project
 			_skinsDirectory = skinsD;
 			_assetsDirectory = assetsD;
 			_interfacesDirectory = interfaceD;
-			
+
 			readConfig();
+			saveConfig();
 			saveAppConfig();
 		}
-		
+
 		private function readConfig():void
 		{
-			var fileStream:FileStream = new FileStream(); 
-			fileStream.open(_configFile, FileMode.READ); 
-			var configXML:XML = XML(fileStream.readUTFBytes(fileStream.bytesAvailable)); 
+			var fileStream:FileStream = new FileStream();
+			fileStream.open(_configFile, FileMode.READ);
+			var configXML:XML = XML(fileStream.readUTFBytes(fileStream.bytesAvailable));
 			fileStream.close();
-			
-			_skinConfig.configXML = configXML.hasOwnProperty("skins") ? configXML.skins : null;
-			_styleConfig.configXML = configXML.hasOwnProperty("styles") ? configXML.styles : null;
+
+			skinConfig.configXML = configXML.hasOwnProperty("skins") ? configXML.skins[0] : null;
+			styleConfig.configXML = configXML.hasOwnProperty("styles") ? configXML.styles[0] : null;
 		}
-		
+
 		public function saveConfig():void
 		{
-			var config:XML = new XML();
-			config.appendChild(_skinConfig.configXML);
-			config.appendChild(_styleConfig.configXML);
-			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n'; 
-			outputString += config.toXMLString(); 
+			var config:XML = <config/>;
+			config.appendChild(skinConfig.configXML);
+			config.appendChild(styleConfig.configXML);
+			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n';
+			outputString += config.toXMLString();
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(_configFile, FileMode.WRITE);
-			fileStream.writeUTFBytes(outputString); 
-			fileStream.close(); 
+			fileStream.writeUTFBytes(outputString);
+			fileStream.close();
 		}
-		
-		
+
+
 		public function saveAppConfig():void
 		{
 			// 保存打开项目到工程配置文件以便下次自动打开
-			var prefsXML:XML = <prefs><workUrl>{_configFile.parent.nativePath}</workUrl></prefs>; 
-			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n'; 
-			outputString += prefsXML.toXMLString(); 
-			
+			var prefsXML:XML = <prefs><workUrl>{_configFile.parent.nativePath}</workUrl></prefs>;
+			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n';
+			outputString += prefsXML.toXMLString();
+
 			var appConfig:File = File.applicationStorageDirectory.resolvePath("appConfig.xml");
 			var fileStream:FileStream = new FileStream();
 			fileStream.open(appConfig, FileMode.WRITE);
-			fileStream.writeUTFBytes(outputString); 
-			fileStream.close(); 
+			fileStream.writeUTFBytes(outputString);
+			fileStream.close();
 		}
-		
+
 		public function loadAppConfig():void
 		{
 			var appConfig:File = File.applicationStorageDirectory.resolvePath("appConfig.xml");
 			if (appConfig.exists)
 			{
-				var fileStream:FileStream = new FileStream(); 
-				fileStream.open(appConfig, FileMode.READ); 
-				var prefsXML:XML = XML(fileStream.readUTFBytes(fileStream.bytesAvailable)); 
+				var fileStream:FileStream = new FileStream();
+				fileStream.open(appConfig, FileMode.READ);
+				var prefsXML:XML = XML(fileStream.readUTFBytes(fileStream.bytesAvailable));
 				fileStream.close();
-				
+
 				openProject(new File(prefsXML.workUrl));
 			}
 		}

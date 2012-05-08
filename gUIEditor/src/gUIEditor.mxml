@@ -58,7 +58,7 @@
 			
 			
 			
-			public var gUIRoot:Sprite;
+			private var _guiRoot:Sprite;
 			
 			private var _uiContainer:UIComponent;
 			
@@ -185,8 +185,9 @@
 				_uiContainer.percentWidth = 100;
 				_uiContainer.percentHeight = 100;
 				
-				gUIRoot = new Sprite();
-				_uiContainer.addChild(gUIRoot);
+				_guiRoot = new Sprite();
+				_uiContainer.addChild(_guiRoot);
+				ProjectManager.inst.init(_guiRoot);
 				
 				_uiContainer.addEventListener(ResizeEvent.RESIZE, onResizeHandler);
 				this.addElement(_uiContainer);
@@ -239,9 +240,9 @@
 			
 			protected function onResizeHandler(e:ResizeEvent):void
 			{
-				gUIRoot.graphics.clear();
-				gUIRoot.graphics.beginFill(0x70b2ee);
-				gUIRoot.graphics.drawRect(0, 0, e.target.width, e.target.height);
+				_guiRoot.graphics.clear();
+				_guiRoot.graphics.beginFill(0x70b2ee);
+				_guiRoot.graphics.drawRect(0, 0, e.target.width, e.target.height);
 			}
 			
 			
