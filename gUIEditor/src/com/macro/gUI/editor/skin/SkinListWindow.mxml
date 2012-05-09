@@ -63,11 +63,10 @@
 				gridDoubleClick="itemDoubleClickHandler(event)" rowHeight="50">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn dataField="key" headerText="皮肤常量" sortable="false"/>
-				<s:GridColumn dataField="rect" headerText="九切参数" sortable="false"/>
-				<s:GridColumn dataField="align" headerText="对齐方式" sortable="false"/>
-				<s:GridColumn dataField="image" headerText="预览"
-							  itemRenderer="com.macro.gUI.editor.skin.PreviewCell" sortable="false"/>
+				<s:GridColumn dataField="key" headerText="皮肤常量"/>
+				<s:GridColumn dataField="rect" headerText="九切参数"/>
+				<s:GridColumn dataField="align" headerText="对齐方式"/>
+				<s:GridColumn headerText="预览" itemRenderer="com.macro.gUI.editor.skin.PreviewCell"/>
 			</s:ArrayList>
 		</s:columns>
 	</s:DataGrid>

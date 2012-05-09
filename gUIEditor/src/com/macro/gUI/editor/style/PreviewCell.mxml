@@ -1,23 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
-			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					clipAndEnableScrolling="true">
 	<fx:Script>
 		<![CDATA[
+			import com.macro.gUI.assist.TextStyle;
+			import com.macro.gUI.controls.Label;
 			
 			import flash.filters.BitmapFilter;
 			
-			private function test():void
+			
+			private static const testStr:String = "这是一段测试文本，样式效果依赖TextStyle的设置\n如果multiline为false则此行不可见";
+			
+			private function getPreview():BitmapData
 			{
-				var filter:String = '[new GlowFilter(0x000000, 1, 2, 2, 16), ' + 
-					'new GradientGlowFilter(0, 45, [0xFFFFFF, 0xFF0000, 0xFFFF00, 0x00CCFF], [0, 1, 1, 1], [0, 63, 126, 255], 50, 50, 2.5, 3, "outer", false), ' + 
-					'new DropShadowFilter(5, 45, 0, 1, 2, 2, 0.5)]';
+//				var filter:String = '[new GlowFilter(0x000000, 1, 2, 2, 16), ' + 
+//					'new GradientGlowFilter(0, 45, [0xFFFFFF, 0xFF0000, 0xFFFF00, 0x00CCFF], [0, 1, 1, 1], [0, 63, 126, 255], 50, 50, 2.5, 3, "outer", false), ' + 
+//					'new DropShadowFilter(5, 45, 0, 1, 2, 2, 0.5)]';
 				
-				var tf:TextField = new TextField();
-				tf.x = tf.y = 100;
-				tf.text = "这是一段测试文本";
-				tf.textColor = 0xff0000;
-				tf.filters = getFilters(filter);
+				var style:TextStyle = new TextStyle();
+				if (data.font != "")
+					style.font = data.font;
+				if (data.size != "")
+					style.size = data.size;
+				if (data.color != "")
+					style.color = data.color;
+				if (data.bold != "")
+					style.bold = data.bold;
+				if (data.italic != "")
+					style.italic = data.italic;
+				if (data.underline != "")
+					style.underline = data.underline;
+				if (data.align != "")
+					style.align = data.align;
+				if (data.leftMargin != "")
+					style.leftMargin = data.leftMargin;
+				if (data.rightMargin != "")
+					style.rightMargin = data.rightMargin;
+				if (data.indent != "")
+					style.indent = data.indent;
+				if (data.blockIndent != "")
+					style.blockIndent = data.blockIndent;
+				if (data.leading != "")
+					style.leading = data.leading;
+				if (data.kerning != "")
+					style.kerning = data.kerning;
+				if (data.letterSpacing != "")
+					style.letterSpacing = data.letterSpacing;
+				
+				style.multiline = (data.multiline == "true");
+				style.wordWrap = (data.wordWrap == "true");
+				style.maxChars = int(data.maxChars);
+				if (data.filters != "")
+					style.filters = getFilters(data.filters);
+				
+				var label:Label = new Label(testStr);
+				label.width = 100;
+				label.style = style;
+				return label.bitmapData;
 			}
 			
 			
@@ -155,6 +196,16 @@
 						throw new Error("Unsupported number of Constructor args");
 				}
 			}
+			
+			override public function prepare(hasBeenRecycled:Boolean):void
+			{
+				if (data != null)
+				{
+					image.source = getPreview();
+				}
+			}
+				
 		]]>
 	</fx:Script>
-</s:TitleWindow>
+	<s:Image id="image" x="0" y="0" width="100%" height="100%" fillMode="clip"/>
+</s:GridItemRenderer>
