@@ -31,7 +31,8 @@
 				<menuitem label="样式管理器" data="styles"/>
 				<menuitem label="资源管理器" data="resources" enabled="false"/>
 				<menuitem type="separator"/>
-				<menuitem label="重置面板" data="layout"/>
+				<menuitem label="重置面板布局" data="layout"/>
+				<menuitem label="刷新" data="refresh"/>
 			</menuitem>
 			<menuitem label="关于">
 				<menuitem label="帮助" data="help" enabled="false"/>
@@ -45,8 +46,8 @@
 			import com.macro.gUI.editor.Inspector;
 			import com.macro.gUI.editor.TreePanel;
 			import com.macro.gUI.editor.project.ProjectManager;
-			import com.macro.gUI.editor.skin.SkinEditor;
-			import com.macro.gUI.editor.style.StyleEditor;
+			import com.macro.gUI.editor.skin.SkinListWindow;
+			import com.macro.gUI.editor.style.StyleListWindow;
 			
 			import mx.collections.*;
 			import mx.controls.Alert;
@@ -63,9 +64,9 @@
 			
 			private var _uiContainer:UIComponent;
 			
-			private var _skinEditor:SkinEditor;
+			private var _skinEditor:SkinListWindow;
 			
-			private var _styleEditor:StyleEditor;
+			private var _styleEditor:StyleListWindow;
 			
 			private var _componentsPanel:ComponentsPanel = new ComponentsPanel();
 			
@@ -147,7 +148,7 @@
 					{
 						if (_skinEditor == null || _skinEditor.closed)
 						{
-							_skinEditor = new SkinEditor();
+							_skinEditor = new SkinListWindow();
 							_skinEditor.open();
 						}
 						_skinEditor.orderToFront();
@@ -157,7 +158,7 @@
 					{
 						if (_styleEditor == null || _styleEditor.closed)
 						{
-							_styleEditor = new StyleEditor();
+							_styleEditor = new StyleListWindow();
 							_styleEditor.open();
 						}
 						_styleEditor.orderToFront();
@@ -170,6 +171,10 @@
 					case "layout":
 					{
 						resetPanelLayout();
+						break;
+					}
+					case "refresh":
+					{
 						break;
 					}
 					case "help":

@@ -1,74 +1,272 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
-		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  width="1000" height="700" creationComplete="creationCompleteHandler(event)"
-		  showStatusBar="false" title="皮肤管理器">
+<flexponential:ResizableTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+									xmlns:s="library://ns.adobe.com/flex/spark"
+									xmlns:mx="library://ns.adobe.com/flex/mx"
+									xmlns:flexponential="com.flexponential.*"
+									width="640" height="480" close="closeHandler();"
+									creationComplete="creationCompleteHandler(event)"
+									resize="resizeHandler(event)" title="皮肤预览"
+									windowMove="windowMoveHandler(event);">
 	<fx:Script>
 		<![CDATA[
+			import com.macro.gUI.controls.Slice;
 			import com.macro.gUI.editor.project.ProjectManager;
-			import com.macro.gUI.editor.project.SkinConfiguration;
+			import com.macro.gUI.skin.impl.BitmapSkin;
 			
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
 			
-			import spark.events.GridEvent;
+			import spark.events.TitleWindowBoundsEvent;
 			
-			[Bindable]
-			private var skins:ArrayList;
-
-
+			
+			private var _host:SkinListWindow;
+			private var _index:int;
+			
+			private var _key:String;
+			private var _source:DisplayObject;
+			private var _grid:Rectangle;
+			private var _align:int;
+			private var _url:String;
+			
+			private var _slice:Slice = new Slice(null);
+			private var _canvas:BitmapData;
+			
+			private var _horizontal:ArrayList = new ArrayList([{label:"LEFT", value:0x01}, {label:"CENTER", value:0x02}, {label:"RIGHT", value:0x04}]);
+			private var _vertical:ArrayList = new ArrayList([{label:"TOP", value:0x10}, {label:"MIDDLE", value:0x20}, {label:"BOTTOM", value:0x40}]);
+			
+			private function closeHandler():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function windowMoveHandler(e:TitleWindowBoundsEvent):void
+			{
+				if (this.x < 0)
+				{
+					this.x = 0;
+				}
+				if (this.y < 0)
+				{
+					this.y = 0;
+				}
+				
+				if (this.x + this.width > this.parent.width)
+				{
+					this.x = this.parent.width - this.width;
+				}
+				if (this.y + this.height > this.parent.height)
+				{
+					this.y = this.parent.height - this.height;
+				}
+			}
+			
 			protected function creationCompleteHandler(e:FlexEvent):void
 			{
-				skins = new ArrayList();
-				dataGrid.dataProvider = skins;
+				this.title += ": " + _key;
 				
-				var config:SkinConfiguration = ProjectManager.inst.skinConfig;
-				for each (var xml:XML in config.configXML.item)
+				cmbAlignH.dataProvider = _horizontal;
+				cmbAlignV.dataProvider = _vertical;
+				if (_align == 0)
+					_align = 0x11;
+				
+				var i:int;
+				for (i = 0; i < _horizontal.length; i++)
 				{
-					var data:Object = new Object();
-					data.key = xml.@id.toString();
-					data.rect = new Rectangle(xml.@x, xml.@y, xml.@width, xml.@height);
-					data.align = int(xml.@align);
-					data.image = config.getDisplayObject(xml.@id);
-					skins.addItem(data);
+					if ((_align & _horizontal.getItemAt(i).value) == _horizontal.getItemAt(i).value)
+					{
+						cmbAlignH.selectedIndex = i;
+						break;
+					}
+				}
+				for (i = 0; i < _vertical.length; i++)
+				{
+					if ((_align & _vertical.getItemAt(i).value) == _vertical.getItemAt(i).value)
+					{
+						cmbAlignV.selectedIndex = i;
+						break;
+					}
+				}
+				
+				if (_source != null)
+				{
+					numLeft.value = _grid.left;
+					numTop.value = _grid.top;
+					numRight.value = _source.width - _grid.right;
+					numBottom.value = _source.height - _grid.bottom;
+					
+					_slice.bgSkin = new BitmapSkin((_source as Bitmap).bitmapData, _grid, _align);
+				}
+				drawSkin();
+			}
+			
+			private function drawSkin():void
+			{
+				_canvas.fillRect(_canvas.rect, 0);
+				_canvas.copyPixels(_slice.bitmapData, _slice.rect, new Point(), null, null, true);
+				if (chkGuideLine.selected)
+				{
+					var s:Shape = new Shape();
+					s.graphics.lineStyle(1, 0xff0000);
+					// 左
+					s.graphics.moveTo(numLeft.value, 0);
+					s.graphics.lineTo(numLeft.value, _canvas.height);
+					// 右
+					s.graphics.moveTo(_canvas.width - numRight.value, 0);
+					s.graphics.lineTo(_canvas.width - numRight.value, _canvas.height);
+					// 上
+					s.graphics.moveTo(0, numTop.value);
+					s.graphics.lineTo(_canvas.width, numTop.value);
+					// 下
+					s.graphics.moveTo(0, _canvas.height - numBottom.value);
+					s.graphics.lineTo(_canvas.width, _canvas.height - numBottom.value);
+					
+					_canvas.draw(s);
 				}
 			}
 			
-			protected function itemDoubleClickHandler(e:GridEvent):void
+			protected function resizeHandler(e:ResizeEvent):void
 			{
-				if (e.rowIndex != -1)
+				var w:int = e.target.width - 20;
+				var h:int = e.target.height - 120;
+				if (w < 1 || h < 1)
 				{
-					var w:PreviewSkin = new PreviewSkin();
-					w.init(this, e.rowIndex, skins.getItemAt(e.rowIndex));
-					PopUpManager.addPopUp(w, this, true);
-					PopUpManager.centerPopUp(w);
+					return;
 				}
+				imgPreview.width = w;
+				imgPreview.height = h;
+				if (_canvas == null || _canvas.width != w || _canvas.height != h)
+				{
+					_canvas = new BitmapData(w, h, true, 0);
+					imgPreview.source = new Bitmap(_canvas);
+				}
+				_slice.resize(w, h);
+				drawSkin();
 			}
 			
-			public function update(index:int, source:DisplayObject, grid:Rectangle, align:int, filename:String = null):void
+			public function init(host:SkinListWindow, index:int, data:Object):void
 			{
-				var data:Object = skins.getItemAt(index);
-				data.image = source;
-				data.rect = grid;
-				data.align = align;
-				skins.setItemAt(data, index);
+				_host = host;
+				_index = index;
+				_key = data.key;
+				_source = data.image;
+				_align = data.align;
+				_grid = data.rect;
+				_url = data.path;
+			}
+			
+			protected function changeHandler(e:Event):void
+			{
+				if (_source != null)
+				{
+					_align = cmbAlignH.selectedItem.value | cmbAlignV.selectedItem.value;
+					_grid = new Rectangle(numLeft.value, numTop.value, _source.width - numRight.value - numLeft.value, _source.height - numBottom.value - numTop.value);
+					if (_grid.x >= _source.width)
+						_grid.x = 0;
+					
+					if (_grid.y >= _source.height)
+						_grid.y = 0;
+					
+					if (_grid.width < 0)
+						_grid.width = 0;
+					
+					if (_grid.height < 0)
+						_grid.height = 0;
+					
+					_slice.bgSkin = new BitmapSkin((_source as Bitmap).bitmapData, _grid, _align);
+				}
+				drawSkin();
+			}
+			
+			protected function openFileHandler(event:MouseEvent):void
+			{
+				var file:File = File.documentsDirectory;
+				var imageFilter:FileFilter = new FileFilter("Image", "*.gif;*.jpg;*.png");
+				file.browseForOpen("皮肤图片", [imageFilter]);
+				file.addEventListener(Event.SELECT, function(e:Event):void
+				{
+					file.removeEventListener(Event.SELECT, arguments.callee);
+					_url = file.nativePath;
+					
+					var loader:Loader = new Loader();
+					loader.load(new URLRequest(_url));
+					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event):void
+					{
+						loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, arguments.callee);
+						_source = loader.content;
+						changeHandler(null);
+					});
+				});
+			}
+			
+			protected function okClickHandler(event:MouseEvent):void
+			{
+				if (_source == null)
+				{
+					Alert.show("皮肤图片不能为空！", "错误", 4, this);
+					return;
+				}
 				
-				ProjectManager.inst.skinConfig.setDefine(data.key, source, grid, align, filename);
+				if (_url == null)
+				{
+					_host.update(_index, _source, _grid, _align);
+					closeHandler();
+					return;
+				}
+				
+				var original:File = new File(_url);
+				var target:File = ProjectManager.inst.skinsDirectory.resolvePath(original.name);
+				
+				if (target.exists)
+				{
+					Alert.show("存在同名皮肤文件，确定覆盖？", "警告", Alert.YES | Alert.NO, this, function(e:CloseEvent):void
+					{
+						if (e.detail == Alert.YES)
+						{
+							original.copyToAsync(target, true);
+							_host.update(_index, _source, _grid, _align, original.name);
+							closeHandler();
+						}
+					});
+				}
+				else
+				{
+					original.copyToAsync(target);
+					_host.update(_index, _source, _grid, _align, original.name);
+					closeHandler();
+				}
 			}
 			
 		]]>
 	</fx:Script>
-	<s:DataGrid id="dataGrid" x="0" y="0" width="100%" height="100%" doubleClickEnabled="true"
-				gridDoubleClick="itemDoubleClickHandler(event)" rowHeight="50">
-		<s:columns>
-			<s:ArrayList>
-				<s:GridColumn dataField="key" headerText="皮肤常量" sortable="false"/>
-				<s:GridColumn dataField="rect" headerText="九切参数" sortable="false"/>
-				<s:GridColumn dataField="align" headerText="对齐方式" sortable="false"/>
-				<s:GridColumn dataField="image" headerText="预览"
-							  itemRenderer="com.macro.gUI.editor.skin.PreviewCell" sortable="false"/>
-			</s:ArrayList>
-		</s:columns>
-	</s:DataGrid>
-</s:Window>
+	<s:Group width="100%" height="100%" clipAndEnableScrolling="true">
+		<s:NumericStepper id="numLeft" x="50" y="40" width="60" change="changeHandler(event)"
+						  maximum="1000" minimum="0"/>
+		<s:NumericStepper id="numRight" x="270" y="40" width="60" change="changeHandler(event)"
+						  maximum="1000" minimum="0"/>
+		<s:NumericStepper id="numTop" x="160" y="40" width="60" change="changeHandler(event)"
+						  maximum="1000" minimum="0"/>
+		<s:NumericStepper id="numBottom" x="380" y="40" width="60" change="changeHandler(event)"
+						  maximum="1000" minimum="0"/>
+		
+		<s:CheckBox id="chkGuideLine" x="476" y="42" label="辅助线可见" change="changeHandler(event)"
+					selected="true"/>
+		<s:DropDownList id="cmbAlignH" x="65" y="10" width="90" change="changeHandler(event)"/>
+		<s:DropDownList id="cmbAlignV" x="249" y="10" width="90" change="changeHandler(event)"/>
+		<s:Button id="btnOpen" x="395" y="10" label="打开..." click="openFileHandler(event)"/>
+		<s:Button id="btnOk" x="480" y="10" label="确定" click="okClickHandler(event)"/>
+		<s:Button id="btnClose" x="560" y="10" label="取消" click="closeHandler()"/>
+		
+		<s:Image id="imgPreview" x="10" y="70" backgroundColor="#333333"/>
+		
+		<s:Label x="10" y="46" text="左边距"/>
+		<s:Label x="230" y="46" text="右边距"/>
+		<s:Label x="120" y="46" text="上边距"/>
+		<s:Label x="340" y="46" text="下边距"/>
+		<s:Label x="193" y="15" text="垂直对齐"/>
+		<s:Label x="10" y="15" text="水平对齐"/>
+	</s:Group>
+</flexponential:ResizableTitleWindow>

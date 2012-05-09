@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
-		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  width="800" height="600" showStatusBar="false" title="样式管理器">
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
 	<fx:Script>
 		<![CDATA[
 			
@@ -33,36 +32,36 @@
 			private function getFilters(str:String):Array
 			{
 				var filters:Array = new Array();
-
+				
 				var pattern:RegExp = /new (\w+)\((.*?)\)/ig;
 				var result:Object = pattern.exec(str);
-
+				
 				while (result != null)
 				{
 					var className:String = result[1];
 					var parameter:String = result[2];
-
+					
 					filters.push(createFilter(className, parameter));
-
+					
 					result = pattern.exec(str);
 				}
-
+				
 				return filters;
 			}
-
+			
 			private function createFilter(className:String, parameter:String):BitmapFilter
 			{
 				var clz:Class = getDefinitionByName("flash.filters." + className) as Class;
 				var constructors:XMLList = describeType(clz).factory.constructor.parameter;
-
+				
 				var pattern:RegExp = /\s*/g;
 				parameter = parameter.replace(pattern, "");
-
+				
 				var args:Array = [];
 				for each (var xml:XML in constructors)
 				{
 					var type:String = xml.@type;
-
+					
 					var index:int;
 					if (type == "int")
 					{
@@ -112,17 +111,17 @@
 					{
 						throw new Error("Unsupport parameter type!");
 					}
-
+					
 					parameter = parameter.substr(index + 1);
 					if (parameter.length == 0)
 					{
 						break;
 					}
 				}
-
+				
 				return newInstance(clz, args) as BitmapFilter;
 			}
-
+			
 			private function newInstance(clz:Class, args:Array):Object
 			{
 				switch (args.length)
@@ -151,11 +150,11 @@
 						return new clz(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]);
 					case 12:
 						return new clz(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10],
-									   args[11]);
+							args[11]);
 					default:
 						throw new Error("Unsupported number of Constructor args");
 				}
 			}
 		]]>
 	</fx:Script>
-</s:Window>
+</s:TitleWindow>
