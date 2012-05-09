@@ -4,19 +4,17 @@
 									xmlns:mx="library://ns.adobe.com/flex/mx"
 									xmlns:flexponential="com.flexponential.*"
 									width="300" height="280" close="closeHandler();" title="大纲"
-									windowMove="windowMoveHandler(event);">
+									windowMove="windowMoveHandler();">
 	<fx:Script>
 		<![CDATA[
 			import mx.managers.PopUpManager;
-
-			import spark.events.TitleWindowBoundsEvent;
 
 			private function closeHandler():void
 			{
 				PopUpManager.removePopUp(this);
 			}
 
-			private function windowMoveHandler(e:TitleWindowBoundsEvent):void
+			private function windowMoveHandler():void
 			{
 				if (this.x < 0)
 				{

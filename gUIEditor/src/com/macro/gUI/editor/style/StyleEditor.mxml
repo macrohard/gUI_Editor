@@ -2,24 +2,203 @@
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 			   xmlns:s="library://ns.adobe.com/flex/spark"
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   width="400" height="300" close="closeHandler();">
+			   width="366" height="346" close="closeHandler();"
+			   creationComplete="creationCompleteHandler()" title="样式编辑器"
+			   windowMove="windowMoveHandler();">
 	<fx:Script>
 		<![CDATA[
-			import com.macro.gUI.editor.style.StyleListWindow;
-
+			import mx.collections.ArrayList;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
+
+
+			private var _host:StyleListWindow;
+
+			private var _index:int;
+
+			private var _data:Object;
+
+
+			private var _alignMode:ArrayList = new ArrayList([{ label: "LEFT", value: "left" }, { label: "CENTER", value: "center" }, { label: "RIGHT",
+																  value: "right" }, { label: "JUSTIFY", value: "justify" }]);
+
 
 			private function closeHandler():void
 			{
 				PopUpManager.removePopUp(this);
 			}
 
+			private function windowMoveHandler():void
+			{
+				if (this.x < 0)
+				{
+					this.x = 0;
+				}
+				if (this.y < 0)
+				{
+					this.y = 0;
+				}
+
+				if (this.x + this.width > this.parent.width)
+				{
+					this.x = this.parent.width - this.width;
+				}
+				if (this.y + this.height > this.parent.height)
+				{
+					this.y = this.parent.height - this.height;
+				}
+			}
+
 			public function init(host:StyleListWindow, index:int, data:Object):void
 			{
-				// TODO Auto Generated method stub
+				_host = host;
+				_index = index;
+				_data = data;
+			}
 
+			protected function okClickHandler():void
+			{
+				_data.font = txtFont.text;
+				_data.size = numSize.value.toString();
+				_data.color = pikColor.selectedColor.toString();
+				_data.bold = chkBold.selected.toString();
+				_data.italic = chkItalic.selected.toString();
+				_data.underline = chkUnderline.selected.toString();
+				_data.align = cmbAlign.selectedItem.value;
+
+				_data.leftMargin = numLeftMargin.value.toString();
+				_data.rightMargin = numRightMargin.value.toString();
+				_data.indent = numIndent.value.toString();
+				_data.blockIndent = numBlockIndent.value.toString();
+				_data.leading = numLeading.value.toString();
+				_data.letterSpacing = numLetterSpacing.value.toString();
+				_data.kerning = chkKerning.selected.toString();
+				_data.multiline = chkMultiline.selected.toString();
+				_data.wordWrap = chkWordWrap.selected.toString();
+				_data.maxChars = numMaxChars.value.toString();
+				_data.filters = txtFilter.text;
+
+				_host.update(_index, _data);
+				closeHandler();
+			}
+
+			protected function resetHandler():void
+			{
+				txtFont.text = "";
+				numSize.value = 12;
+				pikColor.selectedColor = 0;
+				chkBold.selected = false;
+				chkItalic.selected = false;
+				chkUnderline.selected = false;
+				cmbAlign.selectedIndex = 0;
+				numLeftMargin.value = 0;
+				numRightMargin.value = 0;
+				numIndent.value = 0;
+				numBlockIndent.value = 0;
+				numLeading.value = 0;
+				numLetterSpacing.value = 0;
+				chkMultiline.selected = false;
+				chkWordWrap.selected = false;
+				chkKerning.selected = false;
+				numMaxChars.value = 0;
+				txtFilter.text = "";
+			}
+
+			protected function creationCompleteHandler():void
+			{
+				this.title += ": " + _data.key;
+
+				cmbAlign.dataProvider = _alignMode;
+				if (_data.align == "")
+					_data.align = "left";
+
+				for (var i:int = 0; i < _alignMode.length; i++)
+				{
+					if (_data.align == _alignMode.getItemAt(i).value)
+					{
+						cmbAlign.selectedIndex = i;
+						break;
+					}
+				}
+
+				txtFont.text = _data.font;
+				txtFilter.text = _data.filters;
+
+				if (_data.size != "")
+					numSize.value = int(_data.size);
+				if (_data.color != "")
+					pikColor.selectedColor = int(_data.color);
+				if (_data.bold != "")
+					chkBold.selected = _data.bold == "true";
+				if (_data.italic != "")
+					chkItalic.selected = _data.italic == "true";
+				if (_data.underline != "")
+					chkUnderline.selected = _data.underline == "true";
+
+				if (_data.leftMargin != "")
+					numLeftMargin.value = int(_data.leftMargin);
+				if (_data.rightMargin != "")
+					numRightMargin.value = int(_data.rightMargin);
+				if (_data.indent != "")
+					numIndent.value = int(_data.indent);
+				if (_data.blockIndent != "")
+					numBlockIndent.value = int(_data.blockIndent);
+				if (_data.leading != "")
+					numLeading.value = int(_data.leading);
+				if (_data.letterSpacing != "")
+					numLetterSpacing.value = int(_data.letterSpacing);
+				if (_data.multiline != "")
+					chkMultiline.selected = _data.multiline == "true";
+				if (_data.wordWrap != "")
+					chkWordWrap.selected = _data.wordWrap == "true";
+				if (_data.kerning != "")
+					chkKerning.selected = _data.kerning == "true";
+				if (_data.maxChars != "")
+					numMaxChars.value = int(_data.maxChars);
 			}
 		]]>
 	</fx:Script>
+	<s:TextInput id="txtFont" x="43" y="10" toolTip="font"/>
+	<s:NumericStepper id="numSize" x="220" y="10" maximum="96" minimum="8" toolTip="size" value="12"/>
+	<mx:ColorPicker id="pikColor" x="329" y="10" selectedColor="#000000" toolTip="color"/>
+	<s:CheckBox id="chkBold" x="171" y="42" label="粗体" selected="false" toolTip="bold"/>
+	<s:CheckBox id="chkItalic" x="233" y="42" label="斜体" selected="false" toolTip="italic"/>
+	<s:CheckBox id="chkUnderline" x="298" y="42" label="下划线" selected="false" toolTip="underline"/>
+	<s:DropDownList id="cmbAlign" x="43" y="40" width="100" toolTip="align"/>
+	<s:NumericStepper id="numLeftMargin" x="53" y="69" width="50" maximum="100" minimum="0"
+					  toolTip="leftMargin" value="0"/>
+	<s:NumericStepper id="numRightMargin" x="163" y="69" width="50" maximum="100" minimum="0"
+					  toolTip="rightMargin" value="0"/>
+	<s:NumericStepper id="numIndent" x="53" y="99" width="50" maximum="100" minimum="0"
+					  toolTip="indent" value="0"/>
+	<s:NumericStepper id="numBlockIndent" x="163" y="99" width="50" maximum="100" minimum="0"
+					  toolTip="blockIndent" value="0"/>
+	<s:NumericStepper id="numLeading" x="53" y="129" width="50" maximum="100" minimum="0"
+					  toolTip="leading" value="0"/>
+	<s:NumericStepper id="numLetterSpacing" x="163" y="129" width="50" maximum="100" minimum="0"
+					  toolTip="letterSpacing" value="0"/>
+	<s:CheckBox id="chkMultiline" x="311" y="71" label="多行" selected="false" toolTip="multiline"/>
+	<s:CheckBox id="chkWordWrap" x="233" y="71" label="自动转行" selected="false" toolTip="wordWrap"/>
+	<s:CheckBox id="chkKerning" x="234" y="131" label="字距调整" selected="false" toolTip="kerning"/>
+	<s:NumericStepper id="numMaxChars" x="300" y="99" width="50" maximum="100" minimum="0"
+					  toolTip="maxChars，仅用于TextInput" value="0"/>
+	<s:TextArea id="txtFilter" x="10" y="182" width="340" height="91" toolTip="filters，暂只支持手工编写滤镜代码"/>
+
+	<s:Button id="btnReset" x="10" y="281" label="默认" click="resetHandler()"/>
+	<s:Button id="btnCancel" x="280" y="281" label="取消" click="closeHandler()"/>
+	<s:Button id="btnOk" x="202" y="281" label="确定" click="okClickHandler()"/>
+
+	<s:Label x="10" y="136" text="行间距"/>
+	<s:Label x="10" y="165" text="滤镜"/>
+	<s:Label x="120" y="136" text="字间距"/>
+	<s:Label x="10" y="106" text="缩进"/>
+	<s:Label x="120" y="106" text="块缩进"/>
+	<s:Label x="232" y="106" text="最大字符数"/>
+	<s:Label x="10" y="16" text="字体"/>
+	<s:Label x="10" y="46" text="对齐"/>
+	<s:Label x="10" y="76" text="左边距"/>
+	<s:Label x="120" y="76" text="右边距"/>
+	<s:Label x="192" y="16" text="字号"/>
+	<s:Label x="293" y="16" text="字色"/>
 
 </s:TitleWindow>

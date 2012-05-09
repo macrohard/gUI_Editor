@@ -4,9 +4,9 @@
 									xmlns:mx="library://ns.adobe.com/flex/mx"
 									xmlns:flexponential="com.flexponential.*"
 									width="640" height="480" close="closeHandler();"
-									creationComplete="creationCompleteHandler(event)"
-									resize="resizeHandler(event)" title="皮肤预览"
-									windowMove="windowMoveHandler(event);">
+									creationComplete="creationCompleteHandler()"
+									resize="resizeHandler(event)" title="皮肤编辑器"
+									windowMove="windowMoveHandler();">
 	<fx:Script>
 		<![CDATA[
 			import com.macro.gUI.controls.Slice;
@@ -16,11 +16,8 @@
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
-			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
-			
-			import spark.events.TitleWindowBoundsEvent;
 			
 			
 			private var _host:SkinListWindow;
@@ -43,7 +40,7 @@
 				PopUpManager.removePopUp(this);
 			}
 			
-			private function windowMoveHandler(e:TitleWindowBoundsEvent):void
+			private function windowMoveHandler():void
 			{
 				if (this.x < 0)
 				{
@@ -64,7 +61,7 @@
 				}
 			}
 			
-			protected function creationCompleteHandler(e:FlexEvent):void
+			protected function creationCompleteHandler():void
 			{
 				this.title += ": " + _key;
 				
@@ -158,7 +155,7 @@
 				_url = data.path;
 			}
 			
-			protected function changeHandler(e:Event):void
+			protected function changeHandler():void
 			{
 				if (_source != null)
 				{
@@ -181,7 +178,7 @@
 				drawSkin();
 			}
 			
-			protected function openFileHandler(event:MouseEvent):void
+			protected function openFileHandler():void
 			{
 				var file:File = File.documentsDirectory;
 				var imageFilter:FileFilter = new FileFilter("Image", "*.gif;*.jpg;*.png");
@@ -197,12 +194,12 @@
 					{
 						loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, arguments.callee);
 						_source = loader.content;
-						changeHandler(null);
+						changeHandler();
 					});
 				});
 			}
 			
-			protected function okClickHandler(event:MouseEvent):void
+			protected function okClickHandler():void
 			{
 				if (_source == null)
 				{
@@ -243,21 +240,21 @@
 		]]>
 	</fx:Script>
 	<s:Group width="100%" height="100%" clipAndEnableScrolling="true">
-		<s:NumericStepper id="numLeft" x="50" y="40" width="60" change="changeHandler(event)"
+		<s:NumericStepper id="numLeft" x="50" y="40" width="60" change="changeHandler()"
 						  maximum="1000" minimum="0"/>
-		<s:NumericStepper id="numRight" x="270" y="40" width="60" change="changeHandler(event)"
+		<s:NumericStepper id="numRight" x="270" y="40" width="60" change="changeHandler()"
 						  maximum="1000" minimum="0"/>
-		<s:NumericStepper id="numTop" x="160" y="40" width="60" change="changeHandler(event)"
+		<s:NumericStepper id="numTop" x="160" y="40" width="60" change="changeHandler()"
 						  maximum="1000" minimum="0"/>
-		<s:NumericStepper id="numBottom" x="380" y="40" width="60" change="changeHandler(event)"
+		<s:NumericStepper id="numBottom" x="380" y="40" width="60" change="changeHandler()"
 						  maximum="1000" minimum="0"/>
 		
-		<s:CheckBox id="chkGuideLine" x="476" y="42" label="辅助线可见" change="changeHandler(event)"
+		<s:CheckBox id="chkGuideLine" x="476" y="42" label="辅助线可见" change="changeHandler()"
 					selected="true"/>
-		<s:DropDownList id="cmbAlignH" x="65" y="10" width="90" change="changeHandler(event)"/>
-		<s:DropDownList id="cmbAlignV" x="249" y="10" width="90" change="changeHandler(event)"/>
-		<s:Button id="btnOpen" x="395" y="10" label="打开..." click="openFileHandler(event)"/>
-		<s:Button id="btnOk" x="480" y="10" label="确定" click="okClickHandler(event)"/>
+		<s:DropDownList id="cmbAlignH" x="65" y="10" width="90" change="changeHandler()"/>
+		<s:DropDownList id="cmbAlignV" x="249" y="10" width="90" change="changeHandler()"/>
+		<s:Button id="btnOpen" x="395" y="10" label="打开..." click="openFileHandler()"/>
+		<s:Button id="btnOk" x="480" y="10" label="确定" click="okClickHandler()"/>
 		<s:Button id="btnClose" x="560" y="10" label="取消" click="closeHandler()"/>
 		
 		<s:Image id="imgPreview" x="10" y="70" backgroundColor="#333333"/>

@@ -2,8 +2,9 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
 					   xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   closing="closeWindowHandler(event)"
-					   creationComplete="creationCompleteHandler(event)">
+					   closing="closeWindowHandler()"
+					   creationComplete="creationCompleteHandler()">
+	<fx:Style source="gUIEditor.css"/>
 	<fx:Declarations>
 		<fx:XMLList id="menuDefines">
 			<menuitem label="文件">
@@ -53,7 +54,6 @@
 			import mx.controls.Alert;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
-			import mx.events.FlexEvent;
 			import mx.events.MenuEvent;
 			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
@@ -125,7 +125,7 @@
 					}
 					case "exit":
 					{
-						closeWindowHandler(null);
+						closeWindowHandler();
 						this.exit();
 						break;
 					}
@@ -184,7 +184,7 @@
 				}
 			}
 			
-			protected function creationCompleteHandler(e:FlexEvent):void
+			protected function creationCompleteHandler():void
 			{
 				_uiContainer = new UIComponent();
 				_uiContainer.x = 0;
@@ -252,10 +252,13 @@
 			}
 			
 			
-			protected function closeWindowHandler(e:Event):void
+			protected function closeWindowHandler():void
 			{
-				ProjectManager.inst.saveConfig();
-				ProjectManager.inst.saveAppConfig();
+				if (ProjectManager.inst.workUrl != null)
+				{
+					ProjectManager.inst.saveConfig();
+					ProjectManager.inst.saveAppConfig();
+				}
 			}
 			
 			private function createProject():void
