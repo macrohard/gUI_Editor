@@ -6,6 +6,8 @@
 		  showStatusBar="false" title="样式管理器">
 	<fx:Script>
 		<![CDATA[
+			import com.macro.gUI.assist.TextStyle;
+			import com.macro.gUI.controls.Label;
 			import com.macro.gUI.editor.project.ProjectManager;
 			import com.macro.gUI.editor.project.StyleConfiguration;
 			
@@ -15,8 +17,11 @@
 			import spark.events.GridEvent;
 			
 			
+			private static const testStr:String = "这是一段测试文本，样式效果依赖TextStyle的设置\n如果multiline为false则此行不可见";
+			
 			[Bindable]
 			private var styles:ArrayList;
+			
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
@@ -47,9 +52,62 @@
 					data.maxChars = xml.@maxChars.toString();
 					data.filters = xml.@filters.toString();
 					
+					data.image = getPreview(data);
+					
 					styles.addItem(data);
 				}
 			}
+			
+			
+			private function getPreview(data:Object):BitmapData
+			{
+				var filter:String = '[new GlowFilter(0x00ff00, 1, 2, 2, 16), ' + 
+					'new GradientGlowFilter(0, 45, [0xFFFFFF, 0xFF0000, 0xFFFF00, 0x00CCFF], [0, 1, 1, 1], [0, 63, 126, 255], 50, 50, 2.5, 3, "outer", false), ' + 
+					'new DropShadowFilter(5, 45, 0, 1, 2, 2, 0.5)]';
+				
+				var style:TextStyle = new TextStyle();
+				if (data.font != "")
+					style.font = data.font;
+				if (data.size != "")
+					style.size = data.size;
+				if (data.color != "")
+					style.color = data.color;
+				if (data.bold != "")
+					style.bold = data.bold;
+				if (data.italic != "")
+					style.italic = data.italic;
+				if (data.underline != "")
+					style.underline = data.underline;
+				if (data.align != "")
+					style.align = data.align;
+				if (data.leftMargin != "")
+					style.leftMargin = data.leftMargin;
+				if (data.rightMargin != "")
+					style.rightMargin = data.rightMargin;
+				if (data.indent != "")
+					style.indent = data.indent;
+				if (data.blockIndent != "")
+					style.blockIndent = data.blockIndent;
+				if (data.leading != "")
+					style.leading = data.leading;
+				if (data.kerning != "")
+					style.kerning = data.kerning;
+				if (data.letterSpacing != "")
+					style.letterSpacing = data.letterSpacing;
+				
+				style.multiline = (data.multiline == "true");
+				style.wordWrap = (data.wordWrap == "true");
+				style.maxChars = int(data.maxChars);
+				style.filters = FilterUtil.getFilters(filter);
+				if (data.filters != "")
+					style.filters = FilterUtil.getFilters(data.filters);
+				
+				var label:Label = new Label(testStr);
+				label.width = 100;
+				label.style = style;
+				return label.bitmapData;
+			}
+			
 			
 			protected function itemDoubleClickHandler(e:GridEvent):void
 			{
