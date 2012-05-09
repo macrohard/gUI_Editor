@@ -2,50 +2,29 @@ package com.macro.gUI.editor.project
 {
 	import com.macro.gUI.assist.TextStyle;
 	import com.macro.gUI.skin.StyleDef;
-
+	
 	import flash.utils.describeType;
 
 
 	public class StyleConfiguration
 	{
-		private var _config:XML = <styles>
-					<item id="LABEL" />
-					<item id="TEXTINPUT" />
-					<item id="TEXTINPUT_DISABLE" />
-					<item id="TEXTAREA" />
-					<item id="TITLEBAR" />
-
-					<item id="LIST_ITEM" />
-					<item id="LIST_ITEM_SELECTED" />
-					<item id="COMBO_INPUT" />
-					<item id="COMBO_INPUT_DISABLE" />
-					<item id="COMBO_LIST_ITEM" />
-					<item id="COMBO_LIST_ITEM_SELECTED" />
-
-					<item id="WINDOW_TITLE" />
-					<item id="TAPPANEL_TITLE" />
-
-					<item id="LINKBUTTON_NORMAL" />
-					<item id="LINKBUTTON_OVER" />
-					<item id="LINKBUTTON_DOWN" />
-					<item id="LINKBUTTON_DISABLE" />
-
-					<item id="BUTTON_NORMAL" />
-					<item id="BUTTON_OVER" />
-					<item id="BUTTON_DOWN" />
-					<item id="BUTTON_DISABLE" />
-
-					<item id="ICONBUTTON" />
-					<item id="ICONBUTTON_DISABLE" />
-
-					<item id="TOGGLEBUTTON_SELECTED" />
-					<item id="TOGGLEBUTTON_SELECTED_OVER" />
-					<item id="TOGGLEBUTTON_SELECTED_DOWN" />
-					<item id="TOGGLEBUTTON_SELECTED_DISABLE" />
-				</styles>;
+		private var _config:XML;
 
 		public function StyleConfiguration()
 		{
+			var keyList:Vector.<String> = new Vector.<String>();
+			var reflect:XMLList = describeType(StyleDef).constant;
+			for each (var xml:XML in reflect)
+			{
+				keyList.push(xml.@name);
+			}
+			keyList.sort(0);
+			
+			_config = <styles/>;
+			for each (var s:String in keyList)
+			{
+				_config.appendChild(<item id={s} />);
+			}
 		}
 
 

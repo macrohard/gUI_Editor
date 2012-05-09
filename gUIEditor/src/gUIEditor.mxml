@@ -40,6 +40,7 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import com.macro.gUI.GameUI;
 			import com.macro.gUI.editor.ComponentsPanel;
 			import com.macro.gUI.editor.Inspector;
 			import com.macro.gUI.editor.TreePanel;
@@ -123,6 +124,7 @@
 					}
 					case "exit":
 					{
+						closeWindowHandler(null);
 						this.exit();
 						break;
 					}
@@ -187,7 +189,7 @@
 				
 				_guiRoot = new Sprite();
 				_uiContainer.addChild(_guiRoot);
-				ProjectManager.inst.init(_guiRoot);
+				GameUI.init(_guiRoot);
 				
 				_uiContainer.addEventListener(ResizeEvent.RESIZE, onResizeHandler);
 				this.addElement(_uiContainer);
@@ -196,8 +198,7 @@
 				
 				var appXml:XML = NativeApplication.nativeApplication.applicationDescriptor;
 				var ns:Namespace = appXml.namespace();
-				var ver:String = "版本号：" + appXml.ns::versionNumber;
-				menuDefines[2].appendChild(<menuitem label={ver}/>);
+				menuDefines[2].appendChild(<menuitem label={"Version: " + appXml.ns::versionNumber}/>);
 				
 				ProjectManager.inst.loadAppConfig();
 				setStatusText();
@@ -248,7 +249,8 @@
 			
 			protected function closeWindowHandler(e:Event):void
 			{
-				//				e.preventDefault();
+				ProjectManager.inst.saveConfig();
+				ProjectManager.inst.saveAppConfig();
 			}
 			
 			private function createProject():void

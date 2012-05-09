@@ -1,19 +1,8 @@
 package com.macro.gUI.editor.project
 {
-	import com.macro.gUI.GameUI;
-
-	import flash.display.Sprite;
-	import flash.events.Event;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
-	import flash.geom.Rectangle;
-	import flash.utils.ByteArray;
-
-	import mx.controls.Alert;
-	import mx.events.CloseEvent;
-	import mx.utils.Base64Decoder;
-	import mx.utils.Base64Encoder;
 
 
 	/**
@@ -29,13 +18,15 @@ package com.macro.gUI.editor.project
 
 		public var styleConfig:StyleConfiguration = new StyleConfiguration();
 
+
+		public var skinsDirectory:File;
+
+		public var assetsDirectory:File;
+
+		public var interfacesDirectory:File;
+		
+		
 		private var _configFile:File;
-
-		private var _skinsDirectory:File;
-
-		private var _assetsDirectory:File;
-
-		private var _interfacesDirectory:File;
 
 
 		public function ProjectManager()
@@ -55,13 +46,6 @@ package com.macro.gUI.editor.project
 				return _configFile.parent.nativePath;
 
 			return null;
-		}
-
-
-		public function init(root:Sprite):void
-		{
-			// TODO 新建界面时得到宽高
-			GameUI.init(root, 800, 600);
 		}
 
 
@@ -142,13 +126,11 @@ package com.macro.gUI.editor.project
 		private function setProject(configF:File, skinsD:File, assetsD:File, interfaceD:File):void
 		{
 			_configFile = configF;
-			_skinsDirectory = skinsD;
-			_assetsDirectory = assetsD;
-			_interfacesDirectory = interfaceD;
+			skinsDirectory = skinsD;
+			assetsDirectory = assetsD;
+			interfacesDirectory = interfaceD;
 
 			readConfig();
-			saveConfig();
-			saveAppConfig();
 		}
 
 		private function readConfig():void

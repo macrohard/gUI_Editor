@@ -9,7 +9,6 @@
 			import com.macro.gUI.editor.project.ProjectManager;
 			import com.macro.gUI.editor.project.SkinConfiguration;
 			
-			import mx.collections.XMLListCollection;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
@@ -30,7 +29,7 @@
 					var data:Object = new Object();
 					data.key = xml.@id.toString();
 					data.rect = new Rectangle(xml.@x, xml.@y, xml.@width, xml.@height);
-					data.align = xml.@align.toString();
+					data.align = int(xml.@align);
 					data.image = config.getDisplayObject(xml.@id);
 					skins.addItem(data);
 				}
@@ -45,6 +44,17 @@
 					PopUpManager.addPopUp(w, this, true);
 					PopUpManager.centerPopUp(w);
 				}
+			}
+			
+			public function update(index:int, source:DisplayObject, grid:Rectangle, align:int, filename:String = null):void
+			{
+				var data:Object = skins.getItemAt(index);
+				data.image = source;
+				data.rect = grid;
+				data.align = align;
+				skins.setItemAt(data, index);
+				
+				ProjectManager.inst.skinConfig.setDefine(data.key, source, grid, align, filename);
 			}
 			
 		]]>
