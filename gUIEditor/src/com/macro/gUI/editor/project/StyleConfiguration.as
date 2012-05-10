@@ -12,25 +12,15 @@ package com.macro.gUI.editor.project
 
 		public function StyleConfiguration()
 		{
-			var keyList:Vector.<String> = new Vector.<String>();
-			var reflect:XMLList = describeType(StyleDef).constant;
-			for each (var xml:XML in reflect)
-			{
-				keyList.push(xml.@name);
-			}
-			keyList.sort(0);
-
-			_config = <styles/>;
-			for each (var s:String in keyList)
-			{
-				_config.appendChild(<item id={s} />);
-			}
+			createDefaultConfig();
 		}
 
 
 
 		public function set configXML(value:XML):void
 		{
+			createDefaultConfig();
+			
 			if (value == null)
 				return;
 
@@ -98,6 +88,24 @@ package com.macro.gUI.editor.project
 		public function getDefine(id:String):XML
 		{
 			return _config.item.(@id == id)[0];
+		}
+		
+		
+		private function createDefaultConfig():void
+		{
+			var keyList:Vector.<String> = new Vector.<String>();
+			var reflect:XMLList = describeType(StyleDef).constant;
+			for each (var xml:XML in reflect)
+			{
+				keyList.push(xml.@name);
+			}
+			keyList.sort(0);
+			
+			_config = <styles/>;
+			for each (var s:String in keyList)
+			{
+				_config.appendChild(<item id={s} />);
+			}
 		}
 	}
 }

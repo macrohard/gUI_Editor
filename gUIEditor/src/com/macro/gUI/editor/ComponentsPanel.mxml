@@ -60,6 +60,10 @@
 				tree.expandChildrenOf(CompConfiguration.configXML[1], true);
 				tree.expandChildrenOf(CompConfiguration.configXML[2], true);
 				
+				tree.setStyle("disclosureClosedIcon", null);
+				tree.setStyle("disclosureOpenIcon", null);
+				tree.setStyle("paddingLeft", 5);
+				
 				dragImage = new Image();
 				var s:Shape = new Shape();
 				s.graphics.beginFill(0);

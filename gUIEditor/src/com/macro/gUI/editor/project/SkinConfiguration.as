@@ -20,27 +20,15 @@ package com.macro.gUI.editor.project
 
 		public function SkinConfiguration()
 		{
-			var keyList:Vector.<String> = new Vector.<String>();
-			var reflect:XMLList = describeType(SkinDef).constant;
-			for each (var xml:XML in reflect)
-			{
-				keyList.push(xml.@name);
-			}
-			keyList.sort(0);
-			
-			_config = <skins/>;
-			for each (var s:String in keyList)
-			{
-				_config.appendChild(<item id={s} />);
-			}
-			
-			_contents = new Dictionary();
+			createDefaultConfig();
 		}
 
 
 
 		public function set configXML(value:XML):void
 		{
+			createDefaultConfig();
+			
 			if (value == null)
 				return;
 
@@ -112,5 +100,23 @@ package com.macro.gUI.editor.project
 			return _contents[id];
 		}
 
+		private function createDefaultConfig():void
+		{
+			var keyList:Vector.<String> = new Vector.<String>();
+			var reflect:XMLList = describeType(SkinDef).constant;
+			for each (var xml:XML in reflect)
+			{
+				keyList.push(xml.@name);
+			}
+			keyList.sort(0);
+			
+			_config = <skins/>;
+			for each (var s:String in keyList)
+			{
+				_config.appendChild(<item id={s} />);
+			}
+			
+			_contents = new Dictionary();
+		}
 	}
 }
