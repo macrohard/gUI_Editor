@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<flexponential:ResizableTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
-									xmlns:s="library://ns.adobe.com/flex/spark"
-									xmlns:mx="library://ns.adobe.com/flex/mx"
-									xmlns:flexponential="com.flexponential.*"
-									width="640" height="480" close="closeHandler();"
-									creationComplete="creationCompleteHandler()"
-									resize="resizeHandler(event)" title="皮肤编辑器"
-									windowMove="windowMoveHandler();">
+<customComponents:ResizableTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+									   xmlns:s="library://ns.adobe.com/flex/spark"
+									   xmlns:mx="library://ns.adobe.com/flex/mx"
+									   xmlns:customComponents="com.macro.gUI.editor.customComponents.*"
+									   width="640" height="480" close="closeHandler();"
+									   creationComplete="creationCompleteHandler()"
+									   resize="resizeHandler(event)" title="皮肤编辑器"
+									   windowMove="windowMoveHandler();">
 	<fx:Script>
 		<![CDATA[
 			import com.macro.gUI.controls.Slice;
@@ -239,6 +239,7 @@
 			
 		]]>
 	</fx:Script>
+	<customComponents:controlBarContent/>
 	<s:Group width="100%" height="100%" clipAndEnableScrolling="true">
 		<s:NumericStepper id="numLeft" x="50" y="40" width="60" change="changeHandler()"
 						  maximum="1000" minimum="0"/>
@@ -266,4 +267,4 @@
 		<s:Label x="193" y="15" text="垂直对齐"/>
 		<s:Label x="10" y="15" text="水平对齐"/>
 	</s:Group>
-</flexponential:ResizableTitleWindow>
+</customComponents:ResizableTitleWindow>

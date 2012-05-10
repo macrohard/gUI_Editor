@@ -46,6 +46,7 @@
 			import com.macro.gUI.editor.ComponentsPanel;
 			import com.macro.gUI.editor.Inspector;
 			import com.macro.gUI.editor.TreePanel;
+			import com.macro.gUI.editor.Workstation;
 			import com.macro.gUI.editor.project.ProjectManager;
 			import com.macro.gUI.editor.skin.SkinListWindow;
 			import com.macro.gUI.editor.style.StyleListWindow;
@@ -60,9 +61,7 @@
 			
 			
 			
-			private var _guiRoot:Sprite;
-			
-			private var _uiContainer:UIComponent;
+			private var _uiContainer:Workstation;
 			
 			private var _skinEditor:SkinListWindow;
 			
@@ -186,17 +185,11 @@
 			
 			protected function creationCompleteHandler():void
 			{
-				_uiContainer = new UIComponent();
+				_uiContainer = new Workstation();
 				_uiContainer.x = 0;
 				_uiContainer.y = 30;
 				_uiContainer.percentWidth = 100;
 				_uiContainer.percentHeight = 100;
-				
-				_guiRoot = new Sprite();
-				_uiContainer.addChild(_guiRoot);
-				GameUI.init(_guiRoot);
-				
-				_uiContainer.addEventListener(ResizeEvent.RESIZE, onResizeHandler);
 				this.addElement(_uiContainer);
 				
 				resetPanelLayout();
@@ -242,15 +235,6 @@
 				_inspector.y = this.height - _inspector.height - b;
 				PopUpManager.addPopUp(_inspector, this);
 			}
-			
-			
-			protected function onResizeHandler(e:ResizeEvent):void
-			{
-				_guiRoot.graphics.clear();
-				_guiRoot.graphics.beginFill(0x70b2ee);
-				_guiRoot.graphics.drawRect(0, 0, e.target.width, e.target.height);
-			}
-			
 			
 			protected function closeWindowHandler():void
 			{

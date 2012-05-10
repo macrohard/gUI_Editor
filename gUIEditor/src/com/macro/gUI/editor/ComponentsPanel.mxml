@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<flexponential:ResizableTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
-									xmlns:s="library://ns.adobe.com/flex/spark"
-									xmlns:mx="library://ns.adobe.com/flex/mx"
-									xmlns:flexponential="com.flexponential.*"
-									width="300" height="280" close="closeHandler();" title="组件"
-									windowMove="windowMoveHandler();">
+<customComponents:ResizableTitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+									   xmlns:s="library://ns.adobe.com/flex/spark"
+									   xmlns:mx="library://ns.adobe.com/flex/mx"
+									   xmlns:flexponential="com.flexponential.*"
+									   xmlns:customComponents="com.macro.gUI.editor.customComponents.*"
+									   width="300" height="280" close="closeHandler();"
+									   creationComplete="creationCompleteHandler()"
+									   resize="resizeHandler(event)" title="组件"
+									   windowMove="windowMoveHandler();">
 	<fx:Script>
 		<![CDATA[
+			import mx.collections.XMLListCollection;
+			import mx.controls.treeClasses.TreeItemRenderer;
+			import mx.core.DragSource;
+			import mx.core.UIComponent;
+			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			import mx.managers.DragManager;
 			import mx.managers.PopUpManager;
+			
+			import spark.components.Image;
+			
+			private var dragImage:Image;
 
 			private function closeHandler():void
 			{
@@ -34,6 +49,86 @@
 					this.y = this.parent.height - this.height;
 				}
 			}
+
+			public var componentsXML:XMLList =
+					<>
+						<category label="Controls">
+							<item label="Label" inspector=""/>
+							<item label="LinkButton" inspector=""/>
+							<item label="Button" inspector=""/>
+							<item label="IconButton" inspector=""/>
+							<item label="ToggleButton" inspector=""/>
+							<item label="TextInput" inspector=""/>
+							<item label="ImageBox" inspector=""/>
+							<item label="ImageButton" inspector=""/>
+							<item label="Canvas" inspector=""/>
+							<item label="Slice" inspector=""/>
+							<item label="TitleBar" inspector=""/>
+						</category>
+						<category label="Composites">
+							<item label="CheckBox" inspector=""/>
+							<item label="RadioButton" inspector=""/>
+							<item label="ComboBox" inspector=""/>
+							<item label="List" inspector=""/>
+							<item label="TextArea" inspector=""/>
+							<item label="ProgressBar" inspector=""/>
+							<item label="HScrollBar" inspector=""/>
+							<item label="VScrollBar" inspector=""/>
+							<item label="HSlider" inspector=""/>
+							<item label="VSlider" inspector=""/>
+						</category>
+						<category label="Containers">
+							<item label="Container" inspector=""/>
+							<item label="Panel" inspector=""/>
+							<item label="ScrollPanel" inspector=""/>
+							<item label="BackgroundPanel" inspector=""/>
+							<item label="TabPanel" inspector=""/>
+							<item label="Window" inspector=""/>
+						</category>
+					</>;
+
+			protected function creationCompleteHandler():void
+			{
+				tree.dataProvider = new XMLListCollection(componentsXML);
+				tree.validateNow();
+				tree.expandChildrenOf(componentsXML[0], true);
+				tree.expandChildrenOf(componentsXML[1], true);
+				tree.expandChildrenOf(componentsXML[2], true);
+				
+				dragImage = new Image();
+				var s:Shape = new Shape();
+				s.graphics.beginFill(0);
+				s.graphics.drawRect(0, 0, 80, 80);
+				dragImage.source = s;
+			}
+
+			protected function resizeHandler(e:ResizeEvent):void
+			{
+				tree.width = e.target.width;
+				tree.height = e.target.height - 48;
+			}
+
+			protected function mouseDownHandler(e:MouseEvent):void
+			{
+				if (!(e.target.parent is TreeItemRenderer))
+					return;
+				if (tree.selectedItem == null)
+					return;
+				
+				var label:String = tree.selectedItem.@label;
+				if (label != "Controls" && label != "Composites" && label != "Containers")
+				{
+					var dragChild:UIComponent = UIComponent(e.target.parent);
+
+					var dragSource:DragSource = new DragSource();
+					dragSource.addData(label, 'component');
+					
+					DragManager.doDrag(dragChild, dragSource, e, dragImage, dragChild.mouseX, dragChild.mouseY);
+				}
+			}
 		]]>
 	</fx:Script>
-</flexponential:ResizableTitleWindow>
+	<customComponents:controlBarContent/>
+	<customComponents:NoAutoScrollTree id="tree" x="-1" y="-1" labelField="@label"
+									   mouseDown="mouseDownHandler(event)"/>
+</customComponents:ResizableTitleWindow>

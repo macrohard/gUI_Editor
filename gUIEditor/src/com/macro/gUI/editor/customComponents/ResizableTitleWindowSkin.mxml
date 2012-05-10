@@ -33,7 +33,7 @@
         /** 
          * @copy spark.skins.spark.ApplicationSkin#hostComponent
          */
-        [HostComponent("com.flexponential.ResizableTitleWindow")]
+        [HostComponent("com.macro.gUI.editor.customComponents.ResizableTitleWindow")]
         ]]>
 	</fx:Metadata>
 
