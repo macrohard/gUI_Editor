@@ -48,6 +48,59 @@
 					this.y = this.parent.height - this.height;
 				}
 			}
+			
+			protected function creationCompleteHandler():void
+			{
+				this.title += ": " + _data.key;
+				
+				cmbAlign.dataProvider = _alignMode;
+				if (_data.align == "")
+					_data.align = "left";
+				
+				for (var i:int = 0; i < _alignMode.length; i++)
+				{
+					if (_data.align == _alignMode.getItemAt(i).value)
+					{
+						cmbAlign.selectedIndex = i;
+						break;
+					}
+				}
+				
+				txtFont.text = _data.font;
+				txtFilter.text = _data.filters;
+				
+				if (_data.size != "")
+					numSize.value = int(_data.size);
+				if (_data.color != "")
+					pikColor.selectedColor = int(_data.color);
+				if (_data.bold != "")
+					chkBold.selected = _data.bold == "true";
+				if (_data.italic != "")
+					chkItalic.selected = _data.italic == "true";
+				if (_data.underline != "")
+					chkUnderline.selected = _data.underline == "true";
+				
+				if (_data.leftMargin != "")
+					numLeftMargin.value = int(_data.leftMargin);
+				if (_data.rightMargin != "")
+					numRightMargin.value = int(_data.rightMargin);
+				if (_data.indent != "")
+					numIndent.value = int(_data.indent);
+				if (_data.blockIndent != "")
+					numBlockIndent.value = int(_data.blockIndent);
+				if (_data.leading != "")
+					numLeading.value = int(_data.leading);
+				if (_data.letterSpacing != "")
+					numLetterSpacing.value = int(_data.letterSpacing);
+				if (_data.multiline != "")
+					chkMultiline.selected = _data.multiline == "true";
+				if (_data.wordWrap != "")
+					chkWordWrap.selected = _data.wordWrap == "true";
+				if (_data.kerning != "")
+					chkKerning.selected = _data.kerning == "true";
+				if (_data.maxChars != "")
+					numMaxChars.value = int(_data.maxChars);
+			}
 
 			public function init(host:StyleListWindow, index:int, data:Object):void
 			{
@@ -104,58 +157,6 @@
 				txtFilter.text = "";
 			}
 
-			protected function creationCompleteHandler():void
-			{
-				this.title += ": " + _data.key;
-
-				cmbAlign.dataProvider = _alignMode;
-				if (_data.align == "")
-					_data.align = "left";
-
-				for (var i:int = 0; i < _alignMode.length; i++)
-				{
-					if (_data.align == _alignMode.getItemAt(i).value)
-					{
-						cmbAlign.selectedIndex = i;
-						break;
-					}
-				}
-
-				txtFont.text = _data.font;
-				txtFilter.text = _data.filters;
-
-				if (_data.size != "")
-					numSize.value = int(_data.size);
-				if (_data.color != "")
-					pikColor.selectedColor = int(_data.color);
-				if (_data.bold != "")
-					chkBold.selected = _data.bold == "true";
-				if (_data.italic != "")
-					chkItalic.selected = _data.italic == "true";
-				if (_data.underline != "")
-					chkUnderline.selected = _data.underline == "true";
-
-				if (_data.leftMargin != "")
-					numLeftMargin.value = int(_data.leftMargin);
-				if (_data.rightMargin != "")
-					numRightMargin.value = int(_data.rightMargin);
-				if (_data.indent != "")
-					numIndent.value = int(_data.indent);
-				if (_data.blockIndent != "")
-					numBlockIndent.value = int(_data.blockIndent);
-				if (_data.leading != "")
-					numLeading.value = int(_data.leading);
-				if (_data.letterSpacing != "")
-					numLetterSpacing.value = int(_data.letterSpacing);
-				if (_data.multiline != "")
-					chkMultiline.selected = _data.multiline == "true";
-				if (_data.wordWrap != "")
-					chkWordWrap.selected = _data.wordWrap == "true";
-				if (_data.kerning != "")
-					chkKerning.selected = _data.kerning == "true";
-				if (_data.maxChars != "")
-					numMaxChars.value = int(_data.maxChars);
-			}
 		]]>
 	</fx:Script>
 	<s:TextInput id="txtFont" x="43" y="10" toolTip="font"/>

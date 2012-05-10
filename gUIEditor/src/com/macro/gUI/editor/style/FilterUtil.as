@@ -20,15 +20,20 @@ package com.macro.gUI.editor.style
 			
 			var pattern:RegExp = /new (\w+)\((.*?)\)/ig;
 			var result:Object = pattern.exec(str);
-			
-			while (result != null)
+			try
 			{
-				var className:String = result[1];
-				var parameter:String = result[2];
-				
-				filters.push(createFilter(className, parameter));
-				
-				result = pattern.exec(str);
+				while (result != null)
+				{
+					var className:String = result[1];
+					var parameter:String = result[2];
+					
+					filters.push(createFilter(className, parameter));
+					
+					result = pattern.exec(str);
+				}
+			}
+			catch(e:Error)
+			{
 			}
 			
 			return filters;

@@ -2,7 +2,7 @@ package com.macro.gUI.editor.project
 {
 	import com.macro.gUI.assist.TextStyle;
 	import com.macro.gUI.skin.StyleDef;
-	
+
 	import flash.utils.describeType;
 
 
@@ -19,7 +19,7 @@ package com.macro.gUI.editor.project
 				keyList.push(xml.@name);
 			}
 			keyList.sort(0);
-			
+
 			_config = <styles/>;
 			for each (var s:String in keyList)
 			{
@@ -66,18 +66,15 @@ package com.macro.gUI.editor.project
 			return _config;
 		}
 
-		public function setDefine(id:String, font:String = null, size:Object = null, color:Object = null, bold:Object = null,
-								  italic:Object = null, underline:Object = null, align:String = null, leftMargin:Object = null,
-								  rightMargin:Object = null, indent:Object = null, blockIndent:Object = null, leading:Object = null,
-								  kerning:Object = null, letterSpacing:Object = null, multiline:Boolean = false, wordWrap:Boolean = false,
-								  maxChars:int = 50, filters:String = null):void
+		public function setDefine(id:String, font:String, size:String, color:String, bold:String, italic:String, underline:String,
+								  align:String, leftMargin:String, rightMargin:String, indent:String, blockIndent:String, leading:String,
+								  kerning:String, letterSpacing:String, multiline:String, wordWrap:String, maxChars:String,
+								  filters:String):void
 		{
-			if (!_config.hasOwnProperty(id))
-			{
-				return;
-			}
-
 			var item:XML = getDefine(id);
+			if (item == null)
+				return;
+			
 			item.@font = font;
 			item.@size = size;
 			item.@color = color;

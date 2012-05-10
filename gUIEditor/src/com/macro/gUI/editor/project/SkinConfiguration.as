@@ -75,6 +75,7 @@ package com.macro.gUI.editor.project
 			
 			if (filename != null)
 				item.@filename = filename;
+			
 			item.@x = grid.x;
 			item.@y = grid.y;
 			item.@width = grid.width;
