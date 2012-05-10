@@ -111,6 +111,12 @@
 
 			protected function okClickHandler():void
 			{
+				applyClickHandler();
+				closeHandler();
+			}
+			
+			protected function applyClickHandler():void
+			{
 				_data.font = txtFont.text;
 				_data.size = numSize.value.toString();
 				_data.color = pikColor.selectedColor.toString();
@@ -118,7 +124,7 @@
 				_data.italic = chkItalic.selected.toString();
 				_data.underline = chkUnderline.selected.toString();
 				_data.align = cmbAlign.selectedItem.value;
-
+				
 				_data.leftMargin = numLeftMargin.value.toString();
 				_data.rightMargin = numRightMargin.value.toString();
 				_data.indent = numIndent.value.toString();
@@ -130,9 +136,8 @@
 				_data.wordWrap = chkWordWrap.selected.toString();
 				_data.maxChars = numMaxChars.value.toString();
 				_data.filters = txtFilter.text;
-
+				
 				_host.update(_index, _data);
-				closeHandler();
 			}
 
 			protected function resetHandler():void
@@ -187,7 +192,8 @@
 
 	<s:Button id="btnReset" x="10" y="281" label="默认" click="resetHandler()"/>
 	<s:Button id="btnCancel" x="280" y="281" label="取消" click="closeHandler()"/>
-	<s:Button id="btnOk" x="202" y="281" label="确定" click="okClickHandler()"/>
+	<s:Button id="btnOk" x="203" y="281" label="确定" click="okClickHandler()"/>
+	<s:Button id="btnApply" x="125" y="281" label="应用" click="applyClickHandler()"/>
 
 	<s:Label x="10" y="136" text="行间距"/>
 	<s:Label x="10" y="165" text="滤镜"/>

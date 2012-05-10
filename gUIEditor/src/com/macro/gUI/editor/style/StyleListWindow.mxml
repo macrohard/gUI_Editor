@@ -114,7 +114,7 @@
 				{
 					var w:StyleEditor = new StyleEditor();
 					w.init(this, e.rowIndex, styles.getItemAt(e.rowIndex));
-					PopUpManager.addPopUp(w, this, true);
+					PopUpManager.addPopUp(w, this);
 					PopUpManager.centerPopUp(w);
 				}
 			}

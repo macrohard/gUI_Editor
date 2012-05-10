@@ -253,8 +253,8 @@
 		<s:CheckBox id="chkGuideLine" x="476" y="42" label="辅助线可见" change="changeHandler()"
 					selected="true"/>
 		<s:DropDownList id="cmbAlignH" x="65" y="10" width="90" change="changeHandler()"/>
-		<s:DropDownList id="cmbAlignV" x="249" y="10" width="90" change="changeHandler()"/>
-		<s:Button id="btnOpen" x="395" y="10" label="打开..." click="openFileHandler()"/>
+		<s:DropDownList id="cmbAlignV" x="240" y="10" width="90" change="changeHandler()"/>
+		<s:Button id="btnOpen" x="369" y="10" label="打开..." click="openFileHandler()"/>
 		<s:Button id="btnOk" x="480" y="10" label="确定" click="okClickHandler()"/>
 		<s:Button id="btnClose" x="560" y="10" label="取消" click="closeHandler()"/>
 		
@@ -264,7 +264,7 @@
 		<s:Label x="230" y="46" text="右边距"/>
 		<s:Label x="120" y="46" text="上边距"/>
 		<s:Label x="340" y="46" text="下边距"/>
-		<s:Label x="193" y="15" text="垂直对齐"/>
+		<s:Label x="185" y="15" text="垂直对齐"/>
 		<s:Label x="10" y="15" text="水平对齐"/>
 	</s:Group>
 </customComponents:ResizableTitleWindow>

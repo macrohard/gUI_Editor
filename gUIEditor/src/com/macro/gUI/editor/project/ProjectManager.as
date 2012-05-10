@@ -185,10 +185,5 @@ package com.macro.gUI.editor.project
 				openProject(new File(prefsXML.workUrl));
 			}
 		}
-
-		public function clearProjectResources():void
-		{
-			// TODO 清理项目冗余资源文件，后期功能
-		}
 	}
 }

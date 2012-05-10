@@ -15,11 +15,10 @@
 				<menuitem type="separator"/>
 				<menuitem label="新建项目" data="createProject"/>
 				<menuitem label="打开项目" data="openProject"/>
-				<menuitem label="清理项目资源" data="clearProject" enabled="false"/>
 				<menuitem type="separator"/>
 				<menuitem label="导出界面" data="exportActionScript"/>
-				<menuitem label="导出皮肤样式" data="exportSkinStyle"/>
-				<menuitem label="导出资源包" data="exportResource" enabled="false"/>
+				<menuitem label="导出皮肤样式swc" data="exportSkinStyle"/>
+				<menuitem label="导出资源包swf" data="exportResource" enabled="false"/>
 				<menuitem type="separator"/>
 				<menuitem label="退出" data="exit"/>
 			</menuitem>
@@ -103,11 +102,6 @@
 					case "openProject":
 					{
 						openProject();
-						break;
-					}
-					case "clearProject":
-					{
-						ProjectManager.inst.clearProjectResources();
 						break;
 					}
 					case "exportActionScript":
