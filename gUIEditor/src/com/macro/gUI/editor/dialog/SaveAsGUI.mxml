@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="280" height="120" close="closeHandler();" title="换名保存界面"
+			   windowMove="windowMoveHandler();">
+	<fx:Script>
+		<![CDATA[
+			import com.macro.gUI.editor.project.ProjectManager;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			
+			private function closeHandler():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function windowMoveHandler():void
+			{
+				if (this.x < 0)
+				{
+					this.x = 0;
+				}
+				if (this.y < 0)
+				{
+					this.y = 0;
+				}
+				
+				if (this.x + this.width > this.parent.width)
+				{
+					this.x = this.parent.width - this.width;
+				}
+				if (this.y + this.height > this.parent.height)
+				{
+					this.y = this.parent.height - this.height;
+				}
+			}
+			
+			private function okClickHandler():void
+			{
+				if (txtName.text.length == 0)
+				{
+					Alert.show("必须输入界面名称！", "错误");
+					return;
+				}
+				
+				if (ProjectManager.inst.hasSameInterface(txtName.text))
+				{
+					Alert.show("已有同名界面，是否覆盖", "警告", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void
+					{
+						if (e.detail == Alert.OK)
+						{
+							createUI();
+						}
+					});
+				}
+				else
+				{
+					createUI();
+				}
+			}
+			
+			private function createUI():void
+			{
+				if (ProjectManager.inst.saveAsInterface(txtName.text) == false)
+				{
+					Alert.show("无法保存界面！界面名称非法，请检查", "错误");
+					return;
+				}
+				closeHandler();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:Label x="31" y="22" text="界面名称"/>
+	<s:TextInput id="txtName" x="95" y="16" width="145"/>
+	<s:Button id="btnOk" x="60" y="53" label="确定" click="okClickHandler()"/>
+	<s:Button id="btnCancel" x="151" y="53" label="取消" click="closeHandler()"/>
+</s:TitleWindow>

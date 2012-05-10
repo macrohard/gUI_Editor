@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="280" height="160" close="closeHandler();" title="创建新界面"
+			   windowMove="windowMoveHandler();" creationComplete="creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.macro.gUI.editor.project.CompConfiguration;
+			import com.macro.gUI.editor.project.ProjectManager;
+			
+			import mx.collections.XMLListCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			
+			private function closeHandler():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function windowMoveHandler():void
+			{
+				if (this.x < 0)
+				{
+					this.x = 0;
+				}
+				if (this.y < 0)
+				{
+					this.y = 0;
+				}
+				
+				if (this.x + this.width > this.parent.width)
+				{
+					this.x = this.parent.width - this.width;
+				}
+				if (this.y + this.height > this.parent.height)
+				{
+					this.y = this.parent.height - this.height;
+				}
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				var xml:XML = CompConfiguration.configXML[2];
+				cmbBase.dataProvider = new XMLListCollection(xml.item);
+			}
+			
+			private function okClickHandler():void
+			{
+				if (cmbBase.selectedIndex == -1)
+				{
+					Alert.show("必须选择基类！", "错误");
+					return;
+				}
+				
+				if (txtName.text.length == 0)
+				{
+					Alert.show("必须输入界面名称！", "错误");
+					return;
+				}
+				
+				if (ProjectManager.inst.hasSameInterface(txtName.text))
+				{
+					Alert.show("已有同名界面，是否覆盖", "警告", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void
+					{
+						if (e.detail == Alert.OK)
+						{
+							createUI();
+						}
+					});
+				}
+				else
+				{
+					createUI();
+				}
+			}
+			
+			private function createUI():void
+			{
+				if (ProjectManager.inst.createInterface(txtName.text, cmbBase.selectedItem.@type) == false)
+				{
+					Alert.show("无法创建界面！界面名称非法，请检查", "错误");
+					return;
+				}
+				closeHandler();
+			}
+		]]>
+	</fx:Script>
+	<s:Label x="31" y="22" text="界面名称"/>
+	<s:Label x="52" y="59" text="基类"/>
+	<s:TextInput id="txtName" x="95" y="16" width="145"/>
+	<s:DropDownList id="cmbBase" x="95" y="53" labelField="@type"></s:DropDownList>
+	<s:Button id="btnOk" x="60" y="90" label="确定" click="okClickHandler()"/>
+	<s:Button id="btnCancel" x="151" y="90" label="取消" click="closeHandler()"/>
+</s:TitleWindow>

@@ -54,10 +54,7 @@ package com.macro.gUI.editor.project
 			var configFile:File = file.resolvePath("config.xml");
 			if (!configFile.exists)
 			{
-				var fileStream:FileStream = new FileStream();
-				fileStream.open(configFile, FileMode.WRITE);
-				fileStream.writeUTFBytes("");
-				fileStream.close();
+				createEmptyFile(configFile);
 			}
 
 			var skinDirectory:File = file.resolvePath("skins");
@@ -92,7 +89,7 @@ package com.macro.gUI.editor.project
 
 			setProject(configFile, skinDirectory, assetDirectory, interfaceDirectory);
 		}
-
+		
 		public function openProject(file:File):Boolean
 		{
 			var configFile:File = file.resolvePath("config.xml");
@@ -184,6 +181,72 @@ package com.macro.gUI.editor.project
 
 				openProject(new File(prefsXML.workUrl));
 			}
+		}
+		
+		
+		
+		public function hasSameInterface(name:String):Boolean
+		{
+			if (name.substr(name.lastIndexOf(".")) != ".xml")
+				name += ".xml";
+			
+			var file:File = interfacesDirectory.resolvePath(name);
+			return file.exists;
+		}
+		
+		public function createInterface(name:String, base:String):Boolean
+		{
+			if (name.substr(name.lastIndexOf(".")) != ".xml")
+				name += ".xml";
+			var file:File = interfacesDirectory.resolvePath(name);
+			
+			try
+			{
+				createEmptyFile(file);
+			}
+			catch (e:Error)
+			{
+				return false;
+			}
+			
+			return true;
+		}
+		
+		public function openInterface(file:File):void
+		{
+			// TODO 打开界面
+		}
+		
+		public function saveInterface():void
+		{
+			// TODO 保存界面
+		}
+		
+		public function saveAsInterface(name:String):Boolean
+		{
+			if (name.substr(name.lastIndexOf(".")) != ".xml")
+				name += ".xml";
+			var file:File = interfacesDirectory.resolvePath(name);
+			
+			try
+			{
+				createEmptyFile(file);
+			}
+			catch (e:Error)
+			{
+				return false;
+			}
+			
+			return true;
+		}
+		
+		
+		private function createEmptyFile(file:File):void
+		{
+			var fileStream:FileStream = new FileStream();
+			fileStream.open(file, FileMode.WRITE);
+			fileStream.writeUTFBytes("");
+			fileStream.close();
 		}
 	}
 }

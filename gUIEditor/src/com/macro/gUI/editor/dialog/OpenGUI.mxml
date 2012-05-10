@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="360" height="260" close="closeHandler();" title="打开界面"
+			   windowMove="windowMoveHandler();" creationComplete="creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.macro.gUI.editor.project.ProjectManager;
+			
+			import mx.controls.FileSystemEnumerationMode;
+			import mx.events.FileEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			
+			private function closeHandler():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function windowMoveHandler():void
+			{
+				if (this.x < 0)
+				{
+					this.x = 0;
+				}
+				if (this.y < 0)
+				{
+					this.y = 0;
+				}
+				
+				if (this.x + this.width > this.parent.width)
+				{
+					this.x = this.parent.width - this.width;
+				}
+				if (this.y + this.height > this.parent.height)
+				{
+					this.y = this.parent.height - this.height;
+				}
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				fileList.directory = ProjectManager.inst.interfacesDirectory;
+				fileList.enumerationMode = FileSystemEnumerationMode.FILES_ONLY;
+				fileList.extensions = [".xml"];
+			}
+			
+			private function okClickHandler():void
+			{
+				if (fileList.selectedIndex == -1)
+					return;
+				
+				ProjectManager.inst.openInterface(fileList.selectedItem as File);
+				closeHandler();
+			}
+			
+			protected function fileChooseHandler(e:FileEvent):void
+			{
+				ProjectManager.inst.openInterface(e.file);
+				closeHandler();
+			}
+			
+		]]>
+	</fx:Script>
+	<mx:FileSystemList id="fileList" x="10" y="10" width="338" height="176" fileChoose="fileChooseHandler(event)"/>
+	<s:Button id="btnOk" x="183" y="194" label="确定" click="okClickHandler()"/>
+	<s:Button id="btnCancel" x="269" y="194" label="取消" click="closeHandler()"/>
+</s:TitleWindow>

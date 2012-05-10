@@ -17,8 +17,8 @@
 				<menuitem label="打开项目" data="openProject"/>
 				<menuitem type="separator"/>
 				<menuitem label="导出界面" data="exportActionScript"/>
-				<menuitem label="导出皮肤样式swc" data="exportSkinStyle"/>
-				<menuitem label="导出资源包swf" data="exportResource" enabled="false"/>
+				<menuitem label="导出皮肤样式" data="exportSkinStyle"/>
+				<menuitem label="导出资源包" data="exportResource" enabled="false"/>
 				<menuitem type="separator"/>
 				<menuitem label="退出" data="exit"/>
 			</menuitem>
@@ -41,21 +41,21 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-			import com.macro.gUI.GameUI;
-			import com.macro.gUI.editor.ComponentsPanel;
-			import com.macro.gUI.editor.Inspector;
-			import com.macro.gUI.editor.TreePanel;
 			import com.macro.gUI.editor.Workstation;
+			import com.macro.gUI.editor.dialog.CreateGUI;
+			import com.macro.gUI.editor.dialog.OpenGUI;
+			import com.macro.gUI.editor.dialog.SaveAsGUI;
+			import com.macro.gUI.editor.panel.ComponentsPanel;
+			import com.macro.gUI.editor.panel.Inspector;
+			import com.macro.gUI.editor.panel.TreePanel;
 			import com.macro.gUI.editor.project.ProjectManager;
 			import com.macro.gUI.editor.skin.SkinListWindow;
 			import com.macro.gUI.editor.style.StyleListWindow;
 			
 			import mx.collections.*;
 			import mx.controls.Alert;
-			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.events.MenuEvent;
-			import mx.events.ResizeEvent;
 			import mx.managers.PopUpManager;
 			
 			
@@ -73,6 +73,19 @@
 			private var _inspector:Inspector = new Inspector();
 			
 			
+			protected function menuShowHandler(e:MenuEvent):void
+			{
+				if (e.menuBar != null && e.menuBar.selectedIndex == 0)
+				{
+					var hasWorkSpace:Boolean = ProjectManager.inst.workUrl != null;
+					var xml:XMLList = menuDefines[0].menuitem;
+					xml[0].@enabled = hasWorkSpace;
+					xml[1].@enabled = hasWorkSpace;
+					xml[2].@enabled = hasWorkSpace;
+					xml[3].@enabled = hasWorkSpace;
+				}
+			}
+			
 			protected function menuItemClickHandler(e:MenuEvent):void
 			{
 				var key:String = e.item.@data;
@@ -80,18 +93,22 @@
 				{
 					case "new":
 					{
+						guiNew();
 						break;
 					}
 					case "open":
 					{
+						guiOpen();
 						break;
 					}
 					case "save":
 					{
+						guiSave();
 						break;
 					}
 					case "saveAs":
 					{
+						guiSaveAs();
 						break;
 					}
 					case "createProject":
@@ -196,6 +213,15 @@
 				setStatusText();
 			}
 			
+			protected function closeWindowHandler():void
+			{
+				if (ProjectManager.inst.workUrl != null)
+				{
+					ProjectManager.inst.saveConfig();
+					ProjectManager.inst.saveAppConfig();
+				}
+			}
+			
 			
 			private function resetPanelLayout():void
 			{
@@ -228,15 +254,6 @@
 				_inspector.x = gap;
 				_inspector.y = this.height - _inspector.height - b;
 				PopUpManager.addPopUp(_inspector, this);
-			}
-			
-			protected function closeWindowHandler():void
-			{
-				if (ProjectManager.inst.workUrl != null)
-				{
-					ProjectManager.inst.saveConfig();
-					ProjectManager.inst.saveAppConfig();
-				}
 			}
 			
 			private function createProject():void
@@ -293,21 +310,40 @@
 			private function setStatusText():void
 			{
 				var url:String = ProjectManager.inst.workUrl;
-				if (url != null)
-				{
-					this.statusText.text = "工作目录：" + url;
-				}
-				else
-				{
-					this.statusText.text = "没有打开的项目";
-				}
+				this.statusText.text = (url == null ? "没有打开的项目" : "工作目录：" + url);
 			}
-
+			
+			
+			private function guiNew():void
+			{
+				var w:CreateGUI = new CreateGUI();
+				PopUpManager.addPopUp(w, this, true);
+				PopUpManager.centerPopUp(w);
+			}
+			
+			private function guiOpen():void
+			{
+				var w:OpenGUI = new OpenGUI();
+				PopUpManager.addPopUp(w, this, true);
+				PopUpManager.centerPopUp(w);
+			}
+			
+			private function guiSave():void
+			{
+				ProjectManager.inst.saveInterface();
+			}
+			
+			private function guiSaveAs():void
+			{
+				var w:SaveAsGUI = new SaveAsGUI();
+				PopUpManager.addPopUp(w, this, true);
+				PopUpManager.centerPopUp(w);
+			}
 			
 		]]>
 	</fx:Script>
 
 	<mx:MenuBar id="topMenuBar" width="100%" height="30" dataProvider="{menuDefines}"
-				itemClick="menuItemClickHandler(event)" labelField="@label"/>
+				itemClick="menuItemClickHandler(event)" menuShow="menuShowHandler(event)" labelField="@label"/>
 
 </s:WindowedApplication>
