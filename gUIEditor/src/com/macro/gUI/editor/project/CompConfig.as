@@ -1,6 +1,6 @@
 package com.macro.gUI.editor.project
 {
-	public class CompConfiguration
+	public class CompConfig
 	{
 		public static const configXML:XMLList =
 			<>

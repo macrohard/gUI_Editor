@@ -10,7 +10,7 @@
 									   windowMove="windowMoveHandler();">
 	<fx:Script>
 		<![CDATA[
-			import com.macro.gUI.editor.project.CompConfiguration;
+			import com.macro.gUI.editor.project.CompConfig;
 			
 			import mx.collections.XMLListCollection;
 			import mx.controls.treeClasses.TreeItemRenderer;
@@ -54,11 +54,11 @@
 
 			protected function creationCompleteHandler():void
 			{
-				tree.dataProvider = new XMLListCollection(CompConfiguration.configXML);
+				tree.dataProvider = new XMLListCollection(CompConfig.configXML);
 				tree.validateNow();
-				tree.expandChildrenOf(CompConfiguration.configXML[0], true);
-				tree.expandChildrenOf(CompConfiguration.configXML[1], true);
-				tree.expandChildrenOf(CompConfiguration.configXML[2], true);
+				tree.expandChildrenOf(CompConfig.configXML[0], true);
+				tree.expandChildrenOf(CompConfig.configXML[1], true);
+				tree.expandChildrenOf(CompConfig.configXML[2], true);
 				
 				tree.setStyle("disclosureClosedIcon", null);
 				tree.setStyle("disclosureOpenIcon", null);

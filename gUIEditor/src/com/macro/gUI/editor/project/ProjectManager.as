@@ -14,9 +14,9 @@ package com.macro.gUI.editor.project
 	public class ProjectManager
 	{
 
-		public var skinConfig:SkinConfiguration = new SkinConfiguration();
+		public var skinConfig:SkinConfig = new SkinConfig();
 
-		public var styleConfig:StyleConfiguration = new StyleConfiguration();
+		public var styleConfig:StyleConfig = new StyleConfig();
 
 
 		public var skinsDirectory:File;
@@ -223,16 +223,7 @@ package com.macro.gUI.editor.project
 				name += ".xml";
 			var file:File = interfacesDirectory.resolvePath(name);
 			
-			try
-			{
-				createEmptyFile(file);
-			}
-			catch (e:Error)
-			{
-				return false;
-			}
-			
-			return true;
+			return createEmptyFile(file);
 		}
 		
 		public function openInterface(file:File):void
@@ -251,25 +242,24 @@ package com.macro.gUI.editor.project
 				name += ".xml";
 			var file:File = interfacesDirectory.resolvePath(name);
 			
+			return createEmptyFile(file);
+		}
+		
+		
+		private function createEmptyFile(file:File):Boolean
+		{
 			try
 			{
-				createEmptyFile(file);
+				var fileStream:FileStream = new FileStream();
+				fileStream.open(file, FileMode.WRITE);
+				fileStream.writeUTFBytes("");
+				fileStream.close();
+				return true;
 			}
 			catch (e:Error)
 			{
 				return false;
 			}
-			
-			return true;
-		}
-		
-		
-		private function createEmptyFile(file:File):void
-		{
-			var fileStream:FileStream = new FileStream();
-			fileStream.open(file, FileMode.WRITE);
-			fileStream.writeUTFBytes("");
-			fileStream.close();
 		}
 	}
 }

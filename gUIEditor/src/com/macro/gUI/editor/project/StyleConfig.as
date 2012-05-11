@@ -6,11 +6,11 @@ package com.macro.gUI.editor.project
 	import flash.utils.describeType;
 
 
-	public class StyleConfiguration
+	public class StyleConfig
 	{
 		private var _config:XML;
 
-		public function StyleConfiguration()
+		public function StyleConfig()
 		{
 			createDefaultConfig();
 		}

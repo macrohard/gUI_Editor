@@ -12,13 +12,13 @@ package com.macro.gUI.editor.project
 	import flash.utils.describeType;
 
 
-	public class SkinConfiguration
+	public class SkinConfig
 	{
 		private var _contents:Dictionary;
 
 		private var _config:XML;
 
-		public function SkinConfiguration()
+		public function SkinConfig()
 		{
 			createDefaultConfig();
 		}

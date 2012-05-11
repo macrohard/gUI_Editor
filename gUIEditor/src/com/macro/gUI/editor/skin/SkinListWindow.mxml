@@ -7,7 +7,7 @@
 	<fx:Script>
 		<![CDATA[
 			import com.macro.gUI.editor.project.ProjectManager;
-			import com.macro.gUI.editor.project.SkinConfiguration;
+			import com.macro.gUI.editor.project.SkinConfig;
 			
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
@@ -23,7 +23,7 @@
 				skins = new ArrayList();
 				dataGrid.dataProvider = skins;
 				
-				var config:SkinConfiguration = ProjectManager.inst.skinConfig;
+				var config:SkinConfig = ProjectManager.inst.skinConfig;
 				for each (var xml:XML in config.configXML.item)
 				{
 					var data:Object = new Object();

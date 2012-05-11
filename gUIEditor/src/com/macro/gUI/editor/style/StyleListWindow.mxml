@@ -9,7 +9,7 @@
 			import com.macro.gUI.assist.TextStyle;
 			import com.macro.gUI.controls.Label;
 			import com.macro.gUI.editor.project.ProjectManager;
-			import com.macro.gUI.editor.project.StyleConfiguration;
+			import com.macro.gUI.editor.project.StyleConfig;
 
 			import mx.managers.PopUpManager;
 
@@ -27,7 +27,7 @@
 				styles = new ArrayList();
 				dataGrid.dataProvider = styles;
 
-				var config:StyleConfiguration = ProjectManager.inst.styleConfig;
+				var config:StyleConfig = ProjectManager.inst.styleConfig;
 				for each (var xml:XML in config.configXML.item)
 				{
 					var data:Object = new Object();
