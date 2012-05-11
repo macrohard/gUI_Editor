@@ -1,8 +1,10 @@
 package com.macro.gUI.editor.project
 {
+	import com.macro.gUI.GameUI;
 	import com.macro.gUI.assist.TextStyle;
+	import com.macro.gUI.editor.style.FilterUtil;
 	import com.macro.gUI.skin.StyleDef;
-
+	
 	import flash.utils.describeType;
 
 
@@ -47,6 +49,8 @@ package com.macro.gUI.editor.project
 					item.@wordWrap = xml.@wordWrap;
 					item.@maxChars = xml.@maxChars;
 					item.@filters = xml.@filters;
+					
+					addStyle(item);
 				}
 			}
 		}
@@ -83,6 +87,8 @@ package com.macro.gUI.editor.project
 			item.@wordWrap = wordWrap;
 			item.@maxChars = maxChars;
 			item.@filters = filters;
+			
+			addStyle(item);
 		}
 
 		public function getDefine(id:String):XML
@@ -105,7 +111,49 @@ package com.macro.gUI.editor.project
 			for each (var s:String in keyList)
 			{
 				_config.appendChild(<item id={s} />);
+				GameUI.skinManager.setStyle(StyleDef[s], null);
 			}
+		}
+		
+		private function addStyle(item:XML):void
+		{
+			var style:TextStyle = new TextStyle();
+			if (item.@font != "")
+				style.font = item.@font;
+			if (item.@size != "")
+				style.size = item.@size;
+			if (item.@color != "")
+				style.color = item.@color;
+			if (item.@bold != "")
+				style.bold = item.@bold == "true";
+			if (item.@italic != "")
+				style.italic = item.@italic == "true";
+			if (item.@underline != "")
+				style.underline = item.@underline == "true";
+			if (item.@align != "")
+				style.align = item.@align;
+			if (item.@leftMargin != "")
+				style.leftMargin = item.@leftMargin;
+			if (item.@rightMargin != "")
+				style.rightMargin = item.@rightMargin;
+			if (item.@indent != "")
+				style.indent = item.@indent;
+			if (item.@blockIndent != "")
+				style.blockIndent = item.@blockIndent;
+			if (item.@leading != "")
+				style.leading = item.@leading;
+			if (item.@kerning != "")
+				style.kerning = item.@kerning == "true";
+			if (item.@letterSpacing != "")
+				style.letterSpacing = item.@letterSpacing;
+			
+			style.multiline = item.@multiline == "true";
+			style.wordWrap = item.@wordWrap == "true";
+			style.maxChars = int(item.@maxChars);
+			if (item.@filters != "")
+				style.filters = FilterUtil.getFilters(item.@filters);
+			
+			GameUI.skinManager.setStyle(StyleDef[item.@id], style);
 		}
 	}
 }

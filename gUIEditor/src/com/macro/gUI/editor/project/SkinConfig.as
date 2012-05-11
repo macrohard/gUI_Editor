@@ -1,5 +1,6 @@
 package com.macro.gUI.editor.project
 {
+	import com.macro.gUI.GameUI;
 	import com.macro.gUI.skin.SkinDef;
 	
 	import flash.display.DisplayObject;
@@ -71,6 +72,8 @@ package com.macro.gUI.editor.project
 			item.@align = align;
 
 			_contents[id] = source;
+			
+			GameUI.skinManager.addSkin(SkinDef[id], source, grid, align);
 		}
 
 		public function getDefine(id:String):XML
@@ -92,6 +95,9 @@ package com.macro.gUI.editor.project
 			{
 				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, arguments.callee);
 				_contents[id] = loader.content;
+				
+				var item:XML = getDefine(id);
+				GameUI.skinManager.addSkin(SkinDef[id], _contents[id], new Rectangle(item.@x, item.@y, item.@width, item.@height), item.@align);
 			});
 		}
 
@@ -114,6 +120,7 @@ package com.macro.gUI.editor.project
 			for each (var s:String in keyList)
 			{
 				_config.appendChild(<item id={s} />);
+				GameUI.skinManager.setSkin(SkinDef[s], null);
 			}
 			
 			_contents = new Dictionary();

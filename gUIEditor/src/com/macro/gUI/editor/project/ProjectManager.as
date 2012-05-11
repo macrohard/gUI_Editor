@@ -19,12 +19,12 @@ package com.macro.gUI.editor.project
 		/**
 		 * 皮肤配置
 		 */
-		public var skinConfig:SkinConfig = new SkinConfig();
+		public var skinConfig:SkinConfig;
 
 		/**
 		 * 样式配置
 		 */
-		public var styleConfig:StyleConfig = new StyleConfig();
+		public var styleConfig:StyleConfig;
 
 
 		/**
@@ -52,39 +52,29 @@ package com.macro.gUI.editor.project
 		 */
 		public var workFile:File;
 
-
-		private var _workbench:Workbench;
+		/**
+		 * 工作台
+		 */
+		public var workbench:Workbench;
 
 
 		public function ProjectManager()
 		{
+			skinConfig = new SkinConfig();
+			styleConfig = new StyleConfig();
 		}
 
-		private static var _inst:ProjectManager = new ProjectManager();
+		private static var _inst:ProjectManager;
 
 		public static function get inst():ProjectManager
 		{
+			if (_inst == null)
+			{
+				_inst = new ProjectManager()
+			}
 			return _inst;
 		}
 
-
-		/**
-		 * 工作台
-		 * @return
-		 *
-		 */
-		public function get workbench():Workbench
-		{
-			if (_workbench == null)
-			{
-				_workbench = new Workbench();
-				_workbench.x = 0;
-				_workbench.y = 30;
-				_workbench.percentWidth = 100;
-				_workbench.percentHeight = 100;
-			}
-			return _workbench;
-		}
 
 
 		public function createProject(file:File):void
@@ -164,7 +154,7 @@ package com.macro.gUI.editor.project
 		private function setProject(configF:File, skinsD:File, assetsD:File, interfaceD:File):void
 		{
 			// 打开项目时，关闭旧工作文档
-			_workbench.close();
+			workbench.close();
 			workFile = null;
 			
 			configFile = configF;
@@ -254,28 +244,28 @@ package com.macro.gUI.editor.project
 
 		public function createDoc(name:String, base:String):void
 		{
+			workbench.create(base);
 			if (name.substr(name.lastIndexOf(".")) != ".xml")
 				name += ".xml";
 			workFile = interfacesDirectory.resolvePath(name);
 			setTitleText();
-			_workbench.create(base);
 		}
 
 		public function openDoc(file:File):void
 		{
-			workFile = file;
-			setTitleText();
-			
 			var fileStream:FileStream = new FileStream();
-			fileStream.open(workFile, FileMode.READ);
+			fileStream.open(file, FileMode.READ);
 			var doc:XML = XML(fileStream.readUTFBytes(fileStream.bytesAvailable));
 			fileStream.close();
-			_workbench.setDocXML(doc);
+			workbench.setDocXML(doc);
+			
+			workFile = file;
+			setTitleText();
 		}
 
 		public function saveDoc():void
 		{
-			var doc:XML = _workbench.getDocXML();
+			var doc:XML = workbench.getDocXML();
 			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n';
 			outputString += doc.toXMLString();
 			

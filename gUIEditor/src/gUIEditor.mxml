@@ -72,6 +72,46 @@
 			
 			
 			
+			protected function creationCompleteHandler():void
+			{
+				var workbench:Workbench = new Workbench();
+				workbench.x = 0;
+				workbench.y = 30;
+				workbench.percentWidth = 100;
+				workbench.percentHeight = 100;
+				ProjectManager.inst.workbench = workbench;
+				this.addElement(workbench);
+				resetPanelLayout();
+				
+				var appXml:XML = NativeApplication.nativeApplication.applicationDescriptor;
+				var ns:Namespace = appXml.namespace();
+				menuDefines[2].appendChild(<menuitem label={"Version: " + appXml.ns::versionNumber}/>);
+				
+				ProjectManager.inst.mainWindow = this;
+				ProjectManager.inst.loadAppConfig();
+			}
+			
+			protected function closeWindowHandler(e:Event):void
+			{
+				e.preventDefault();
+				closeWindow();
+			}
+			
+			private function closeWindow():void
+			{
+				if (checkUnsavedDoc(closeWindow))
+					return;
+				
+				if (ProjectManager.inst.configFile != null)
+				{
+					ProjectManager.inst.saveConfig();
+					ProjectManager.inst.saveAppConfig();
+				}
+				
+				this.exit();
+			}
+			
+			
 			protected function menuShowHandler(e:MenuEvent):void
 			{
 				if (e.menuBar != null && e.menuBar.selectedIndex == 0)
@@ -193,39 +233,6 @@
 						break;
 					}
 				}
-			}
-			
-			protected function creationCompleteHandler():void
-			{
-				this.addElement(ProjectManager.inst.workbench);
-				resetPanelLayout();
-				
-				var appXml:XML = NativeApplication.nativeApplication.applicationDescriptor;
-				var ns:Namespace = appXml.namespace();
-				menuDefines[2].appendChild(<menuitem label={"Version: " + appXml.ns::versionNumber}/>);
-				
-				ProjectManager.inst.mainWindow = this;
-				ProjectManager.inst.loadAppConfig();
-			}
-			
-			protected function closeWindowHandler(e:Event):void
-			{
-				e.preventDefault();
-				closeWindow();
-			}
-			
-			private function closeWindow():void
-			{
-				if (checkUnsavedDoc(closeWindow))
-					return;
-				
-				if (ProjectManager.inst.configFile != null)
-				{
-					ProjectManager.inst.saveConfig();
-					ProjectManager.inst.saveAppConfig();
-				}
-				
-				this.exit();
 			}
 			
 			
@@ -359,6 +366,7 @@
 					}
 					else if (e.detail == Alert.NO)
 					{
+						ProjectManager.inst.workbench.unsaved = false;
 						caller.apply();
 					}
 				});
