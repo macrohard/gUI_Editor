@@ -7,7 +7,7 @@
 	<fx:Style source="gUIEditor.css"/>
 	<fx:Declarations>
 		<fx:XMLList id="menuDefines">
-			<menuitem label="文件">
+			<menu label="文件">
 				<menuitem label="新建界面" data="new"/>
 				<menuitem label="打开界面" data="open"/>
 				<menuitem label="保存" data="save"/>
@@ -18,30 +18,29 @@
 				<menuitem type="separator"/>
 				<menuitem label="导出界面" data="exportActionScript"/>
 				<menuitem label="导出皮肤样式" data="exportSkinStyle"/>
-				<menuitem label="导出资源包" data="exportResource" enabled="false"/>
+				<menuitem label="导出资源包" data="exportAssets" enabled="false"/>
 				<menuitem type="separator"/>
 				<menuitem label="退出" data="exit"/>
-			</menuitem>
-			<menuitem label="查看">
+			</menu>
+			<menu label="查看">
 				<menuitem label="组件面板" data="component"/>
 				<menuitem label="大纲面板" data="tree"/>
 				<menuitem label="属性面板" data="properties"/>
 				<menuitem type="separator"/>
 				<menuitem label="皮肤管理器" data="skins"/>
 				<menuitem label="样式管理器" data="styles"/>
-				<menuitem label="资源管理器" data="resources" enabled="false"/>
+				<menuitem label="资源管理器" data="assets" enabled="false"/>
 				<menuitem type="separator"/>
 				<menuitem label="重置面板布局" data="layout"/>
 				<menuitem label="刷新" data="refresh"/>
-			</menuitem>
-			<menuitem label="关于">
+			</menu>
+			<menu label="关于">
 				<menuitem label="帮助" data="help" enabled="false"/>
-			</menuitem>
+			</menu>
 		</fx:XMLList>
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
-			import com.macro.gUI.editor.Workstation;
 			import com.macro.gUI.editor.dialog.CreateGUI;
 			import com.macro.gUI.editor.dialog.OpenGUI;
 			import com.macro.gUI.editor.dialog.SaveAsGUI;
@@ -49,6 +48,7 @@
 			import com.macro.gUI.editor.panel.Inspector;
 			import com.macro.gUI.editor.panel.TreePanel;
 			import com.macro.gUI.editor.project.ProjectManager;
+			import com.macro.gUI.editor.project.Workbench;
 			import com.macro.gUI.editor.skin.SkinListWindow;
 			import com.macro.gUI.editor.style.StyleListWindow;
 			
@@ -59,8 +59,6 @@
 			import mx.managers.PopUpManager;
 			
 			
-			
-			private var _uiContainer:Workstation;
 			
 			private var _skinEditor:SkinListWindow;
 			
@@ -77,12 +75,15 @@
 			{
 				if (e.menuBar != null && e.menuBar.selectedIndex == 0)
 				{
-					var hasWorkSpace:Boolean = ProjectManager.inst.workUrl != null;
-					var xml:XMLList = menuDefines[0].menuitem;
-					xml[0].@enabled = hasWorkSpace;
-					xml[1].@enabled = hasWorkSpace;
-					xml[2].@enabled = hasWorkSpace;
-					xml[3].@enabled = hasWorkSpace;
+					var hasProject:Boolean = ProjectManager.inst.folder != null;
+					var hasDocument:Boolean = ProjectManager.inst.workbench.doc != null;
+					
+					var xml:XML = menuDefines[0];
+					xml.menuitem.(attribute("data") == "new").@enabled = hasProject;
+					xml.menuitem.(attribute("data") == "open").@enabled = hasProject;
+					xml.menuitem.(attribute("data") == "save").@enabled = hasDocument;
+					xml.menuitem.(attribute("data") == "saveAs").@enabled = hasDocument;
+					xml.menuitem.(attribute("data") == "exportActionScript").@enabled = hasDocument;
 				}
 			}
 			
@@ -129,7 +130,7 @@
 					{
 						break;
 					}
-					case "exportResource":
+					case "exportAssets":
 					{
 						break;
 					}
@@ -174,7 +175,7 @@
 						_styleEditor.orderToFront();
 						break;
 					}
-					case "resources":
+					case "assets":
 					{
 						break;
 					}
@@ -196,13 +197,7 @@
 			
 			protected function creationCompleteHandler():void
 			{
-				_uiContainer = new Workstation();
-				_uiContainer.x = 0;
-				_uiContainer.y = 30;
-				_uiContainer.percentWidth = 100;
-				_uiContainer.percentHeight = 100;
-				this.addElement(_uiContainer);
-				
+				this.addElement(ProjectManager.inst.workbench);
 				resetPanelLayout();
 				
 				var appXml:XML = NativeApplication.nativeApplication.applicationDescriptor;
@@ -215,7 +210,7 @@
 			
 			protected function closeWindowHandler():void
 			{
-				if (ProjectManager.inst.workUrl != null)
+				if (ProjectManager.inst.folder != null)
 				{
 					ProjectManager.inst.saveConfig();
 					ProjectManager.inst.saveAppConfig();
@@ -309,7 +304,7 @@
 			
 			private function setStatusText():void
 			{
-				var url:String = ProjectManager.inst.workUrl;
+				var url:String = ProjectManager.inst.folder;
 				this.statusText.text = (url == null ? "没有打开的项目" : "工作目录：" + url);
 			}
 			

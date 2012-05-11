@@ -27,6 +27,8 @@ package com.macro.gUI.editor.project
 		
 		
 		private var _configFile:File;
+		
+		private var _workbench:Workbench;
 
 
 		public function ProjectManager()
@@ -40,12 +42,33 @@ package com.macro.gUI.editor.project
 			return _inst;
 		}
 
-		public function get workUrl():String
+		/**
+		 * 项目目录
+		 * @return 
+		 * 
+		 */
+		public function get folder():String
 		{
-			if (_configFile)
-				return _configFile.parent.nativePath;
-
-			return null;
+			return _configFile ? _configFile.parent.nativePath : null;
+		}
+		
+		
+		/**
+		 * 工作台
+		 * @return 
+		 * 
+		 */
+		public function get workbench():Workbench
+		{
+			if (_workbench == null)
+			{
+				_workbench = new Workbench();
+				_workbench.x = 0;
+				_workbench.y = 30;
+				_workbench.percentWidth = 100;
+				_workbench.percentHeight = 100;
+			}
+			return _workbench;
 		}
 
 
