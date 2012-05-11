@@ -68,30 +68,23 @@
 					{
 						if (e.detail == Alert.OK)
 						{
-							createUI();
+							ProjectManager.inst.createInterface(txtName.text, cmbBase.selectedItem.@type);
+							closeHandler();
 						}
 					});
 				}
 				else
 				{
-					createUI();
+					ProjectManager.inst.createInterface(txtName.text, cmbBase.selectedItem.@type);
+					closeHandler();
 				}
 			}
 			
-			private function createUI():void
-			{
-				if (ProjectManager.inst.createInterface(txtName.text, cmbBase.selectedItem.@type) == false)
-				{
-					Alert.show("无法创建界面！界面名称非法，请检查", "错误");
-					return;
-				}
-				closeHandler();
-			}
 		]]>
 	</fx:Script>
 	<s:Label x="31" y="22" text="界面名称"/>
 	<s:Label x="52" y="59" text="基类"/>
-	<s:TextInput id="txtName" x="95" y="16" width="145"/>
+	<s:TextInput id="txtName" x="95" y="16" width="145" restrict="A-Za-z0-9_"/>
 	<s:DropDownList id="cmbBase" x="95" y="53" labelField="@type"></s:DropDownList>
 	<s:Button id="btnOk" x="60" y="90" label="确定" click="okClickHandler()"/>
 	<s:Button id="btnCancel" x="151" y="90" label="取消" click="closeHandler()"/>

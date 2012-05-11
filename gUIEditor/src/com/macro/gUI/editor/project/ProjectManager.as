@@ -217,13 +217,13 @@ package com.macro.gUI.editor.project
 			return file.exists;
 		}
 		
-		public function createInterface(name:String, base:String):Boolean
+		public function createInterface(name:String, base:String):void
 		{
 			if (name.substr(name.lastIndexOf(".")) != ".xml")
 				name += ".xml";
 			var file:File = interfacesDirectory.resolvePath(name);
 			
-			return createEmptyFile(file);
+			createEmptyFile(file);
 		}
 		
 		public function openInterface(file:File):void
@@ -236,30 +236,22 @@ package com.macro.gUI.editor.project
 			// TODO 保存界面
 		}
 		
-		public function saveAsInterface(name:String):Boolean
+		public function saveAsInterface(name:String):void
 		{
 			if (name.substr(name.lastIndexOf(".")) != ".xml")
 				name += ".xml";
 			var file:File = interfacesDirectory.resolvePath(name);
 			
-			return createEmptyFile(file);
+			createEmptyFile(file);
 		}
 		
 		
-		private function createEmptyFile(file:File):Boolean
+		private function createEmptyFile(file:File):void
 		{
-			try
-			{
-				var fileStream:FileStream = new FileStream();
-				fileStream.open(file, FileMode.WRITE);
-				fileStream.writeUTFBytes("");
-				fileStream.close();
-				return true;
-			}
-			catch (e:Error)
-			{
-				return false;
-			}
+			var fileStream:FileStream = new FileStream();
+			fileStream.open(file, FileMode.WRITE);
+			fileStream.writeUTFBytes("");
+			fileStream.close();
 		}
 	}
 }
