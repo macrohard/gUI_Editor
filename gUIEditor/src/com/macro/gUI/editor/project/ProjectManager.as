@@ -13,21 +13,46 @@ package com.macro.gUI.editor.project
 	 */
 	public class ProjectManager
 	{
+		public var mainWindow:gUIEditor;
 
+
+		/**
+		 * 皮肤配置
+		 */
 		public var skinConfig:SkinConfig = new SkinConfig();
 
+		/**
+		 * 样式配置
+		 */
 		public var styleConfig:StyleConfig = new StyleConfig();
 
 
+		/**
+		 * 皮肤目录
+		 */
 		public var skinsDirectory:File;
 
+		/**
+		 * 资源目录
+		 */
 		public var assetsDirectory:File;
 
+		/**
+		 * 界面目录
+		 */
 		public var interfacesDirectory:File;
-		
-		
-		private var _configFile:File;
-		
+
+		/**
+		 * 配置文件
+		 */
+		public var configFile:File;
+
+		/**
+		 * 当前编辑的界面文件
+		 */
+		public var workFile:File;
+
+
 		private var _workbench:Workbench;
 
 
@@ -42,21 +67,11 @@ package com.macro.gUI.editor.project
 			return _inst;
 		}
 
-		/**
-		 * 项目目录
-		 * @return 
-		 * 
-		 */
-		public function get folder():String
-		{
-			return _configFile ? _configFile.parent.nativePath : null;
-		}
-		
-		
+
 		/**
 		 * 工作台
-		 * @return 
-		 * 
+		 * @return
+		 *
 		 */
 		public function get workbench():Workbench
 		{
@@ -77,7 +92,10 @@ package com.macro.gUI.editor.project
 			var configFile:File = file.resolvePath("config.xml");
 			if (!configFile.exists)
 			{
-				createEmptyFile(configFile);
+				var fileStream:FileStream = new FileStream();
+				fileStream.open(configFile, FileMode.WRITE);
+				fileStream.writeUTFBytes("");
+				fileStream.close();
 			}
 
 			var skinDirectory:File = file.resolvePath("skins");
@@ -112,7 +130,7 @@ package com.macro.gUI.editor.project
 
 			setProject(configFile, skinDirectory, assetDirectory, interfaceDirectory);
 		}
-		
+
 		public function openProject(file:File):Boolean
 		{
 			var configFile:File = file.resolvePath("config.xml");
@@ -145,18 +163,31 @@ package com.macro.gUI.editor.project
 
 		private function setProject(configF:File, skinsD:File, assetsD:File, interfaceD:File):void
 		{
-			_configFile = configF;
+			// 打开项目时，关闭旧工作文档
+			_workbench.close();
+			workFile = null;
+			
+			configFile = configF;
 			skinsDirectory = skinsD;
 			assetsDirectory = assetsD;
 			interfacesDirectory = interfaceD;
 
 			readConfig();
+			setStatusText();
+			setTitleText();
+			
+			if (mainWindow.skinEditor != null)
+				mainWindow.skinEditor.close();
+			if (mainWindow.styleEditor != null)
+				mainWindow.styleEditor.close();
+			mainWindow.outlinePanel.reset();
+			mainWindow.inspector.reset();
 		}
-
+		
 		private function readConfig():void
 		{
 			var fileStream:FileStream = new FileStream();
-			fileStream.open(_configFile, FileMode.READ);
+			fileStream.open(configFile, FileMode.READ);
 			var configXML:XML = XML(fileStream.readUTFBytes(fileStream.bytesAvailable));
 			fileStream.close();
 
@@ -172,7 +203,7 @@ package com.macro.gUI.editor.project
 			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n';
 			outputString += config.toXMLString();
 			var fileStream:FileStream = new FileStream();
-			fileStream.open(_configFile, FileMode.WRITE);
+			fileStream.open(configFile, FileMode.WRITE);
 			fileStream.writeUTFBytes(outputString);
 			fileStream.close();
 		}
@@ -181,7 +212,7 @@ package com.macro.gUI.editor.project
 		public function saveAppConfig():void
 		{
 			// 保存打开项目到工程配置文件以便下次自动打开
-			var prefsXML:XML = <prefs><workUrl>{_configFile.parent.nativePath}</workUrl></prefs>;
+			var prefsXML:XML = <prefs><workUrl>{configFile.parent.nativePath}</workUrl></prefs>;
 			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n';
 			outputString += prefsXML.toXMLString();
 
@@ -204,54 +235,74 @@ package com.macro.gUI.editor.project
 
 				openProject(new File(prefsXML.workUrl));
 			}
+			else
+			{
+				setStatusText();
+			}
 		}
-		
-		
-		
-		public function hasSameInterface(name:String):Boolean
+
+
+
+		public function hasSameDoc(name:String):Boolean
 		{
 			if (name.substr(name.lastIndexOf(".")) != ".xml")
 				name += ".xml";
-			
+
 			var file:File = interfacesDirectory.resolvePath(name);
 			return file.exists;
 		}
-		
-		public function createInterface(name:String, base:String):void
+
+		public function createDoc(name:String, base:String):void
 		{
 			if (name.substr(name.lastIndexOf(".")) != ".xml")
 				name += ".xml";
-			var file:File = interfacesDirectory.resolvePath(name);
+			workFile = interfacesDirectory.resolvePath(name);
+			setTitleText();
+			_workbench.create(base);
+		}
+
+		public function openDoc(file:File):void
+		{
+			workFile = file;
+			setTitleText();
 			
-			createEmptyFile(file);
-		}
-		
-		public function openInterface(file:File):void
-		{
-			// TODO 打开界面
-		}
-		
-		public function saveInterface():void
-		{
-			// TODO 保存界面
-		}
-		
-		public function saveAsInterface(name:String):void
-		{
-			if (name.substr(name.lastIndexOf(".")) != ".xml")
-				name += ".xml";
-			var file:File = interfacesDirectory.resolvePath(name);
-			
-			createEmptyFile(file);
-		}
-		
-		
-		private function createEmptyFile(file:File):void
-		{
 			var fileStream:FileStream = new FileStream();
-			fileStream.open(file, FileMode.WRITE);
-			fileStream.writeUTFBytes("");
+			fileStream.open(workFile, FileMode.READ);
+			var doc:XML = XML(fileStream.readUTFBytes(fileStream.bytesAvailable));
 			fileStream.close();
+			_workbench.setDocXML(doc);
+		}
+
+		public function saveDoc():void
+		{
+			var doc:XML = _workbench.getDocXML();
+			var outputString:String = '<?xml version="1.0" encoding="utf-8"?>\n';
+			outputString += doc.toXMLString();
+			
+			var fileStream:FileStream = new FileStream();
+			fileStream.open(workFile, FileMode.WRITE);
+			fileStream.writeUTFBytes(outputString);
+			fileStream.close();
+		}
+
+		public function saveAsDoc(name:String):void
+		{
+			if (name.substr(name.lastIndexOf(".")) != ".xml")
+				name += ".xml";
+			workFile = interfacesDirectory.resolvePath(name);
+			setTitleText();
+			saveDoc();
+		}
+
+
+		private function setStatusText():void
+		{
+			mainWindow.statusText.text = (configFile == null ? "没有打开的项目" : "工作目录：" + configFile.nativePath);
+		}
+		
+		private function setTitleText():void
+		{
+			mainWindow.title = (workFile == null ? "gUI界面编辑器" : "gUI界面编辑器: " + workFile.name);
 		}
 	}
 }

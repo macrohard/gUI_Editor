@@ -48,6 +48,12 @@
 				treOutline.width = e.target.width;
 				treOutline.height = e.target.height - 48;
 			}
+			
+			
+			public function reset():void
+			{
+				
+			}
 		]]>
 	</fx:Script>
 	<customComponents:controlBarContent/>

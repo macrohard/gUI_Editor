@@ -43,6 +43,12 @@
 					height = 150;
 			}
 			
+			
+			public function reset():void
+			{
+				
+			}
+			
 		]]>
 	</fx:Script>
 </customComponents:ResizableTitleWindow>

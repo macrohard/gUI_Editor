@@ -2,8 +2,8 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
 					   xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   closing="closeWindowHandler()"
-					   creationComplete="creationCompleteHandler()">
+					   closing="closeWindowHandler(event)" creationComplete="creationCompleteHandler()"
+					   title="gUI界面编辑器">
 	<fx:Style source="gUIEditor.css"/>
 	<fx:Declarations>
 		<fx:XMLList id="menuDefines">
@@ -60,23 +60,24 @@
 			
 			
 			
-			private var _skinEditor:SkinListWindow;
+			public var skinEditor:SkinListWindow;
 			
-			private var _styleEditor:StyleListWindow;
+			public var styleEditor:StyleListWindow;
 			
-			private var _componentsPanel:ComponentsPanel = new ComponentsPanel();
+			public var componentsPanel:ComponentsPanel = new ComponentsPanel();
 			
-			private var _treePanel:TreePanel = new TreePanel();
+			public var outlinePanel:TreePanel = new TreePanel();
 			
-			private var _inspector:Inspector = new Inspector();
+			public var inspector:Inspector = new Inspector();
+			
 			
 			
 			protected function menuShowHandler(e:MenuEvent):void
 			{
 				if (e.menuBar != null && e.menuBar.selectedIndex == 0)
 				{
-					var hasProject:Boolean = ProjectManager.inst.folder != null;
-					var hasDocument:Boolean = ProjectManager.inst.workbench.doc != null;
+					var hasProject:Boolean = ProjectManager.inst.configFile != null;
+					var hasDocument:Boolean = ProjectManager.inst.workFile != null;
 					
 					var xml:XML = menuDefines[0];
 					xml.menuitem.(attribute("data") == "new").@enabled = hasProject;
@@ -136,43 +137,42 @@
 					}
 					case "exit":
 					{
-						closeWindowHandler();
-						this.exit();
+						closeWindow();
 						break;
 					}
 					case "component":
 					{
-						PopUpManager.addPopUp(_componentsPanel, this);
+						PopUpManager.addPopUp(componentsPanel, this);
 						break;
 					}
 					case "tree":
 					{
-						PopUpManager.addPopUp(_treePanel, this);
+						PopUpManager.addPopUp(outlinePanel, this);
 						break;
 					}
 					case "properties":
 					{
-						PopUpManager.addPopUp(_inspector, this);
+						PopUpManager.addPopUp(inspector, this);
 						break;
 					}
 					case "skins":
 					{
-						if (_skinEditor == null || _skinEditor.closed)
+						if (skinEditor == null || skinEditor.closed)
 						{
-							_skinEditor = new SkinListWindow();
-							_skinEditor.open();
+							skinEditor = new SkinListWindow();
+							skinEditor.open();
 						}
-						_skinEditor.orderToFront();
+						skinEditor.orderToFront();
 						break;
 					}
 					case "styles":
 					{
-						if (_styleEditor == null || _styleEditor.closed)
+						if (styleEditor == null || styleEditor.closed)
 						{
-							_styleEditor = new StyleListWindow();
-							_styleEditor.open();
+							styleEditor = new StyleListWindow();
+							styleEditor.open();
 						}
-						_styleEditor.orderToFront();
+						styleEditor.orderToFront();
 						break;
 					}
 					case "assets":
@@ -204,17 +204,28 @@
 				var ns:Namespace = appXml.namespace();
 				menuDefines[2].appendChild(<menuitem label={"Version: " + appXml.ns::versionNumber}/>);
 				
+				ProjectManager.inst.mainWindow = this;
 				ProjectManager.inst.loadAppConfig();
-				setStatusText();
 			}
 			
-			protected function closeWindowHandler():void
+			protected function closeWindowHandler(e:Event):void
 			{
-				if (ProjectManager.inst.folder != null)
+				e.preventDefault();
+				closeWindow();
+			}
+			
+			private function closeWindow():void
+			{
+				if (checkUnsavedDoc(closeWindow))
+					return;
+				
+				if (ProjectManager.inst.configFile != null)
 				{
 					ProjectManager.inst.saveConfig();
 					ProjectManager.inst.saveAppConfig();
 				}
+				
+				this.exit();
 			}
 			
 			
@@ -230,29 +241,32 @@
 				var ph:int = (this.height - t - b - gap) >> 1;
 				
 				// 组件面板
-				_componentsPanel.width = w;
-				_componentsPanel.height = ph;
-				_componentsPanel.x = this.width - _componentsPanel.width - gap;
-				_componentsPanel.y = t;
-				PopUpManager.addPopUp(_componentsPanel, this);
+				componentsPanel.width = w;
+				componentsPanel.height = ph;
+				componentsPanel.x = this.width - componentsPanel.width - gap;
+				componentsPanel.y = t;
+				PopUpManager.addPopUp(componentsPanel, this);
 				
 				// 大纲面板
-				_treePanel.width = w;
-				_treePanel.height = ph;
-				_treePanel.x = _componentsPanel.x;
-				_treePanel.y = _componentsPanel.y + _componentsPanel.height + gap;
-				PopUpManager.addPopUp(_treePanel, this);
+				outlinePanel.width = w;
+				outlinePanel.height = ph;
+				outlinePanel.x = componentsPanel.x;
+				outlinePanel.y = componentsPanel.y + componentsPanel.height + gap;
+				PopUpManager.addPopUp(outlinePanel, this);
 				
 				// 初始化属性面板
-				_inspector.width = _componentsPanel.x - gap * 2;
-				_inspector.height = h;
-				_inspector.x = gap;
-				_inspector.y = this.height - _inspector.height - b;
-				PopUpManager.addPopUp(_inspector, this);
+				inspector.width = componentsPanel.x - gap * 2;
+				inspector.height = h;
+				inspector.x = gap;
+				inspector.y = this.height - inspector.height - b;
+				PopUpManager.addPopUp(inspector, this);
 			}
 			
 			private function createProject():void
 			{
+				if (checkUnsavedDoc(createProject))
+					return;
+				
 				var tmp:File = File.documentsDirectory;
 				tmp.browseForDirectory("请选择新项目的工作目录");
 				tmp.addEventListener(Event.SELECT, function(e:Event):void
@@ -265,52 +279,45 @@
 							if (e.detail == Alert.OK)
 							{
 								ProjectManager.inst.createProject(tmp);
-								setStatusText();
 							}
 						});
 					}
 					else
 					{
 						ProjectManager.inst.createProject(tmp);
-						setStatusText();
 					}
 				});
 			}
 			
 			private function openProject():void
 			{
+				if (checkUnsavedDoc(openProject))
+					return;
+				
 				var tmp:File = File.documentsDirectory;
 				tmp.browseForDirectory("请选择项目的工作目录");
 				tmp.addEventListener(Event.SELECT, function(e:Event):void
 				{
 					tmp.removeEventListener(Event.SELECT, arguments.callee);
-					if (ProjectManager.inst.openProject(tmp))
-					{
-						setStatusText();
-					}
-					else
+					if (!ProjectManager.inst.openProject(tmp))
 					{
 						Alert.show("项目打开失败，将在此目录中创建新项目，你确定吗？", "警告", Alert.YES | Alert.NO, null, function(e:CloseEvent):void
 						{
 							if (e.detail == Alert.YES)
 							{
 								ProjectManager.inst.createProject(tmp);
-								setStatusText();
 							}
 						});
 					}
 				});
 			}
 			
-			private function setStatusText():void
-			{
-				var url:String = ProjectManager.inst.folder;
-				this.statusText.text = (url == null ? "没有打开的项目" : "工作目录：" + url);
-			}
-			
 			
 			private function guiNew():void
 			{
+				if (checkUnsavedDoc(guiNew))
+					return;
+				
 				var w:CreateGUI = new CreateGUI();
 				PopUpManager.addPopUp(w, this, true);
 				PopUpManager.centerPopUp(w);
@@ -318,6 +325,9 @@
 			
 			private function guiOpen():void
 			{
+				if (checkUnsavedDoc(guiOpen))
+					return;
+				
 				var w:OpenGUI = new OpenGUI();
 				PopUpManager.addPopUp(w, this, true);
 				PopUpManager.centerPopUp(w);
@@ -325,7 +335,7 @@
 			
 			private function guiSave():void
 			{
-				ProjectManager.inst.saveInterface();
+				ProjectManager.inst.saveDoc();
 			}
 			
 			private function guiSaveAs():void
@@ -335,10 +345,32 @@
 				PopUpManager.centerPopUp(w);
 			}
 			
+			private function checkUnsavedDoc(caller:Function):Boolean
+			{
+				if (!ProjectManager.inst.workbench.unsaved)
+					return false;
+				
+				Alert.show("当前文档未保存，是否保存？", "提示", Alert.YES | Alert.NO | Alert.CANCEL, null, function(e:CloseEvent):void
+				{
+					if (e.detail == Alert.YES)
+					{
+						ProjectManager.inst.saveDoc();
+						caller.apply();
+					}
+					else if (e.detail == Alert.NO)
+					{
+						caller.apply();
+					}
+				});
+				
+				return true;
+			}
+			
 		]]>
 	</fx:Script>
 
 	<mx:MenuBar id="topMenuBar" width="100%" height="30" dataProvider="{menuDefines}"
-				itemClick="menuItemClickHandler(event)" menuShow="menuShowHandler(event)" labelField="@label"/>
+				itemClick="menuItemClickHandler(event)" labelField="@label"
+				menuShow="menuShowHandler(event)"/>
 
 </s:WindowedApplication>

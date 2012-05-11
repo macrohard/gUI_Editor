@@ -52,13 +52,13 @@
 				if (fileList.selectedIndex == -1)
 					return;
 				
-				ProjectManager.inst.openInterface(fileList.selectedItem as File);
+				ProjectManager.inst.openDoc(fileList.selectedItem as File);
 				closeHandler();
 			}
 			
 			protected function fileChooseHandler(e:FileEvent):void
 			{
-				ProjectManager.inst.openInterface(e.file);
+				ProjectManager.inst.openDoc(e.file);
 				closeHandler();
 			}
 			

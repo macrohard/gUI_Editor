@@ -47,20 +47,20 @@
 					return;
 				}
 				
-				if (ProjectManager.inst.hasSameInterface(txtName.text))
+				if (ProjectManager.inst.hasSameDoc(txtName.text))
 				{
 					Alert.show("已有同名界面，是否覆盖", "警告", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void
 					{
 						if (e.detail == Alert.OK)
 						{
-							ProjectManager.inst.saveAsInterface(txtName.text);
+							ProjectManager.inst.saveAsDoc(txtName.text);
 							closeHandler();
 						}
 					});
 				}
 				else
 				{
-					ProjectManager.inst.saveAsInterface(txtName.text);
+					ProjectManager.inst.saveAsDoc(txtName.text);
 					closeHandler();
 				}
 			}
