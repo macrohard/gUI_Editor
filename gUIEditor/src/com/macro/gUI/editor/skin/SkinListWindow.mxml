@@ -6,8 +6,11 @@
 		  showStatusBar="false" title="皮肤列表">
 	<fx:Script>
 		<![CDATA[
+			import com.macro.gUI.GameUI;
 			import com.macro.gUI.editor.project.ProjectManager;
 			import com.macro.gUI.editor.project.SkinConfig;
+			import com.macro.gUI.skin.SkinDef;
+			import com.macro.utils.StrUtil;
 			
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
@@ -24,13 +27,13 @@
 				dataGrid.dataProvider = skins;
 				
 				var config:SkinConfig = ProjectManager.inst.skinConfig;
-				for each (var xml:XML in config.configXML.item)
+				for each (var item:XML in config.configXML.item)
 				{
 					var data:Object = new Object();
-					data.key = xml.@id.toString();
-					data.rect = new Rectangle(xml.@x, xml.@y, xml.@width, xml.@height);
-					data.align = int(xml.@align);
-					data.image = config.getDisplayObject(xml.@id);
+					data.key = item.@id.toString();
+					data.rect = StrUtil.format("[x:{0}, y:{1}, width:{2}, height:{3}]", [item.@x, item.@y, item.@width, item.@height]);
+					data.align = "0x" + int(item.@align).toString(16);
+					data.image = config.getDisplayObject(item.@id);
 					skins.addItem(data);
 				}
 			}
@@ -40,21 +43,23 @@
 				if (e.rowIndex != -1)
 				{
 					var w:SkinEditor = new SkinEditor();
-					w.init(this, e.rowIndex, skins.getItemAt(e.rowIndex));
+					var item:XML = ProjectManager.inst.skinConfig.getDefine(skins.getItemAt(e.rowIndex).key);
+					w.init(this, e.rowIndex, item);
 					PopUpManager.addPopUp(w, this, true);
 					PopUpManager.centerPopUp(w);
 				}
 			}
 			
-			public function update(index:int, source:DisplayObject, grid:Rectangle, align:int, filename:String = null):void
+			public function update(index:int, item:XML, source:DisplayObject):void
 			{
 				var data:Object = skins.getItemAt(index);
 				data.image = source;
-				data.rect = grid;
-				data.align = align;
+				data.rect = StrUtil.format("[x:{0}, y:{1}, width:{2}, height:{3}]", [item.@x, item.@y, item.@width, item.@height]);;
+				data.align = "0x" + int(item.@align).toString(16);
 				skins.setItemAt(data, index);
 				
-				ProjectManager.inst.skinConfig.setDefine(data.key, source, grid, align, filename);
+				ProjectManager.inst.skinConfig.setDisplayObject(item.@id, source);
+				GameUI.skinManager.createSkin(SkinDef[item.@id], source, new Rectangle(item.@x, item.@y, item.@width, item.@height), item.@align);
 			}
 			
 		]]>

@@ -9,6 +9,7 @@
 									   windowMove="windowMoveHandler();">
 	<fx:Script>
 		<![CDATA[
+			import com.macro.gUI.GameUI;
 			import com.macro.gUI.controls.Slice;
 			import com.macro.gUI.editor.project.ProjectManager;
 			import com.macro.gUI.skin.impl.BitmapSkin;
@@ -22,11 +23,11 @@
 			
 			private var _host:SkinListWindow;
 			private var _index:int;
+			private var _data:XML;
 			
-			private var _key:String;
 			private var _source:DisplayObject;
-			private var _grid:Rectangle;
 			private var _align:int;
+			private var _grid:Rectangle;
 			private var _url:String;
 			
 			private var _slice:Slice = new Slice(null);
@@ -61,12 +62,21 @@
 				}
 			}
 			
+			public function init(host:SkinListWindow, index:int, data:XML):void
+			{
+				_host = host;
+				_index = index;
+				_data = data;
+			}
+			
 			protected function creationCompleteHandler():void
 			{
-				this.title += ": " + _key;
+				this.title += ": " + _data.@id;
 				
 				cmbAlignH.dataProvider = _horizontal;
 				cmbAlignV.dataProvider = _vertical;
+				
+				_align = int(_data.@align);
 				if (_align == 0)
 					_align = 0x11;
 				
@@ -88,14 +98,16 @@
 					}
 				}
 				
+				_source = ProjectManager.inst.skinConfig.getDisplayObject(_data.@id);
 				if (_source != null)
 				{
+					_grid = new Rectangle(_data.@x, _data.@y, _data.@width, _data.@height);
 					numLeft.value = _grid.left;
 					numTop.value = _grid.top;
 					numRight.value = _source.width - _grid.right;
 					numBottom.value = _source.height - _grid.bottom;
 					
-					_slice.bgSkin = new BitmapSkin((_source as Bitmap).bitmapData, _grid, _align);
+					_slice.bgSkin = GameUI.skinManager.createSkin(null, _source, _grid, _align);
 				}
 				drawSkin();
 			}
@@ -142,17 +154,6 @@
 				}
 				_slice.resize(w, h);
 				drawSkin();
-			}
-			
-			public function init(host:SkinListWindow, index:int, data:Object):void
-			{
-				_host = host;
-				_index = index;
-				_key = data.key;
-				_source = data.image;
-				_align = data.align;
-				_grid = data.rect;
-				_url = data.path;
 			}
 			
 			protected function changeHandler():void
@@ -209,7 +210,13 @@
 				
 				if (_url == null)
 				{
-					_host.update(_index, _source, _grid, _align);
+					_data.@x = _grid.x;
+					_data.@y = _grid.y;
+					_data.@width = _grid.width;
+					_data.@height = _grid.height;
+					_data.@align = _align;
+					
+					_host.update(_index, _data, _source);
 					closeHandler();
 					return;
 				}
@@ -224,7 +231,14 @@
 						if (e.detail == Alert.YES)
 						{
 							original.copyToAsync(target, true);
-							_host.update(_index, _source, _grid, _align, original.name);
+							
+							_data.@x = _grid.x;
+							_data.@y = _grid.y;
+							_data.@width = _grid.width;
+							_data.@height = _grid.height;
+							_data.@align = _align;
+							_data.@filename = original.name;
+							_host.update(_index, _data, _source);
 							closeHandler();
 						}
 					});
@@ -232,7 +246,14 @@
 				else
 				{
 					original.copyToAsync(target);
-					_host.update(_index, _source, _grid, _align, original.name);
+					
+					_data.@x = _grid.x;
+					_data.@y = _grid.y;
+					_data.@width = _grid.width;
+					_data.@height = _grid.height;
+					_data.@align = _align;
+					_data.@filename = original.name;
+					_host.update(_index, _data, _source);
 					closeHandler();
 				}
 			}

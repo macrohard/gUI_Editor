@@ -29,7 +29,7 @@ package com.macro.gUI.editor.project
 		public function set configXML(value:XML):void
 		{
 			createDefaultConfig();
-			
+
 			if (value == null)
 				return;
 
@@ -45,9 +45,27 @@ package com.macro.gUI.editor.project
 					item.@height = xml.@height;
 					item.@align = xml.@align;
 
-					loadSkin(item.@id, item.@filename);
+					if (item.@filename != "")
+						loadSkin(item.@id, item.@filename);
 				}
 			}
+		}
+		
+		private function loadSkin(id:String, filename:String):void
+		{
+			var file:File = ProjectManager.inst.skinsDirectory.resolvePath(filename);
+			
+			var loader:Loader = new Loader();
+			loader.load(new URLRequest(file.nativePath));
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event):void
+			{
+				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, arguments.callee);
+				
+				_contents[id] = loader.content;
+				var item:XML = getDefine(id);
+				GameUI.skinManager.createSkin(SkinDef[id], loader.content, new Rectangle(item.@x, item.@y, item.@width, item.@height),
+					item.@align);
+			});
 		}
 
 		public function get configXML():XML
@@ -56,55 +74,11 @@ package com.macro.gUI.editor.project
 		}
 
 
-		public function setDefine(id:String, source:DisplayObject, grid:Rectangle, align:int, filename:String):void
-		{
-			var item:XML = getDefine(id);
-			if (item == null)
-				return;
-			
-			if (filename != null)
-				item.@filename = filename;
-			
-			item.@x = grid.x;
-			item.@y = grid.y;
-			item.@width = grid.width;
-			item.@height = grid.height;
-			item.@align = align;
-
-			_contents[id] = source;
-			
-			GameUI.skinManager.addSkin(SkinDef[id], source, grid, align);
-		}
-
 		public function getDefine(id:String):XML
 		{
 			return _config.item.(@id == id)[0];
 		}
 
-
-		private function loadSkin(id:String, filename:String):void
-		{
-			if (filename == "")
-				return;
-
-			var file:File = ProjectManager.inst.skinsDirectory.resolvePath(filename);
-			
-			var loader:Loader = new Loader();
-			loader.load(new URLRequest(file.nativePath));
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event):void
-			{
-				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, arguments.callee);
-				_contents[id] = loader.content;
-				
-				var item:XML = getDefine(id);
-				GameUI.skinManager.addSkin(SkinDef[id], _contents[id], new Rectangle(item.@x, item.@y, item.@width, item.@height), item.@align);
-			});
-		}
-
-		public function getDisplayObject(id:String):DisplayObject
-		{
-			return _contents[id];
-		}
 
 		private function createDefaultConfig():void
 		{
@@ -115,15 +89,26 @@ package com.macro.gUI.editor.project
 				keyList.push(xml.@name);
 			}
 			keyList.sort(0);
-			
+
 			_config = <skins/>;
 			for each (var s:String in keyList)
 			{
 				_config.appendChild(<item id={s} />);
 				GameUI.skinManager.setSkin(SkinDef[s], null);
 			}
-			
+
 			_contents = new Dictionary();
+		}
+		
+		
+		public function getDisplayObject(id:String):DisplayObject
+		{
+			return _contents[id];
+		}
+		
+		public function setDisplayObject(id:String, source:DisplayObject):void
+		{
+			_contents[id] = source;
 		}
 	}
 }

@@ -16,7 +16,7 @@
 
 			private var _index:int;
 
-			private var _data:Object;
+			private var _data:XML;
 
 
 			private var _alignMode:ArrayList = new ArrayList([{ label: "LEFT", value: "left" }, { label: "CENTER", value: "center" }, { label: "RIGHT",
@@ -49,64 +49,64 @@
 				}
 			}
 			
+			public function init(host:StyleListWindow, index:int, data:XML):void
+			{
+				_host = host;
+				_index = index;
+				_data = data;
+			}
+			
 			protected function creationCompleteHandler():void
 			{
-				this.title += ": " + _data.key;
+				this.title += ": " + _data.@id;
 				
 				cmbAlign.dataProvider = _alignMode;
-				if (_data.align == "")
-					_data.align = "left";
+				if (_data.@align == "")
+					_data.@align = "left";
 				
 				for (var i:int = 0; i < _alignMode.length; i++)
 				{
-					if (_data.align == _alignMode.getItemAt(i).value)
+					if (_data.@align == _alignMode.getItemAt(i).value)
 					{
 						cmbAlign.selectedIndex = i;
 						break;
 					}
 				}
 				
-				txtFont.text = _data.font;
-				txtFilter.text = _data.filters;
+				txtFont.text = _data.@font;
+				txtFilter.text = _data.@filters;
 				
-				if (_data.size != "")
-					numSize.value = int(_data.size);
-				if (_data.color != "")
-					pikColor.selectedColor = int(_data.color);
-				if (_data.bold != "")
-					chkBold.selected = _data.bold == "true";
-				if (_data.italic != "")
-					chkItalic.selected = _data.italic == "true";
-				if (_data.underline != "")
-					chkUnderline.selected = _data.underline == "true";
+				if (_data.@size != "")
+					numSize.value = int(_data.@size);
+				if (_data.@color != "")
+					pikColor.selectedColor = int(_data.@color);
+				if (_data.@bold != "")
+					chkBold.selected = _data.@bold == "true";
+				if (_data.@italic != "")
+					chkItalic.selected = _data.@italic == "true";
+				if (_data.@underline != "")
+					chkUnderline.selected = _data.@underline == "true";
 				
-				if (_data.leftMargin != "")
-					numLeftMargin.value = int(_data.leftMargin);
-				if (_data.rightMargin != "")
-					numRightMargin.value = int(_data.rightMargin);
-				if (_data.indent != "")
-					numIndent.value = int(_data.indent);
-				if (_data.blockIndent != "")
-					numBlockIndent.value = int(_data.blockIndent);
-				if (_data.leading != "")
-					numLeading.value = int(_data.leading);
-				if (_data.letterSpacing != "")
-					numLetterSpacing.value = int(_data.letterSpacing);
-				if (_data.multiline != "")
-					chkMultiline.selected = _data.multiline == "true";
-				if (_data.wordWrap != "")
-					chkWordWrap.selected = _data.wordWrap == "true";
-				if (_data.kerning != "")
-					chkKerning.selected = _data.kerning == "true";
-				if (_data.maxChars != "")
-					numMaxChars.value = int(_data.maxChars);
-			}
-
-			public function init(host:StyleListWindow, index:int, data:Object):void
-			{
-				_host = host;
-				_index = index;
-				_data = data;
+				if (_data.@leftMargin != "")
+					numLeftMargin.value = int(_data.@leftMargin);
+				if (_data.@rightMargin != "")
+					numRightMargin.value = int(_data.@rightMargin);
+				if (_data.@indent != "")
+					numIndent.value = int(_data.@indent);
+				if (_data.@blockIndent != "")
+					numBlockIndent.value = int(_data.@blockIndent);
+				if (_data.@leading != "")
+					numLeading.value = int(_data.@leading);
+				if (_data.@letterSpacing != "")
+					numLetterSpacing.value = int(_data.@letterSpacing);
+				if (_data.@multiline != "")
+					chkMultiline.selected = _data.@multiline == "true";
+				if (_data.@wordWrap != "")
+					chkWordWrap.selected = _data.@wordWrap == "true";
+				if (_data.@kerning != "")
+					chkKerning.selected = _data.@kerning == "true";
+				if (_data.@maxChars != "")
+					numMaxChars.value = int(_data.@maxChars);
 			}
 
 			protected function okClickHandler():void
@@ -117,25 +117,25 @@
 			
 			protected function applyClickHandler():void
 			{
-				_data.font = txtFont.text;
-				_data.size = numSize.value.toString();
-				_data.color = pikColor.selectedColor.toString();
-				_data.bold = chkBold.selected.toString();
-				_data.italic = chkItalic.selected.toString();
-				_data.underline = chkUnderline.selected.toString();
-				_data.align = cmbAlign.selectedItem.value;
+				_data.@font = txtFont.text;
+				_data.@size = numSize.value;
+				_data.@color = pikColor.selectedColor;
+				_data.@bold = chkBold.selected;
+				_data.@italic = chkItalic.selected;
+				_data.@underline = chkUnderline.selected;
+				_data.@align = cmbAlign.selectedItem.value;
 				
-				_data.leftMargin = numLeftMargin.value.toString();
-				_data.rightMargin = numRightMargin.value.toString();
-				_data.indent = numIndent.value.toString();
-				_data.blockIndent = numBlockIndent.value.toString();
-				_data.leading = numLeading.value.toString();
-				_data.letterSpacing = numLetterSpacing.value.toString();
-				_data.kerning = chkKerning.selected.toString();
-				_data.multiline = chkMultiline.selected.toString();
-				_data.wordWrap = chkWordWrap.selected.toString();
-				_data.maxChars = numMaxChars.value.toString();
-				_data.filters = txtFilter.text;
+				_data.@leftMargin = numLeftMargin.value;
+				_data.@rightMargin = numRightMargin.value;
+				_data.@indent = numIndent.value;
+				_data.@blockIndent = numBlockIndent.value;
+				_data.@leading = numLeading.value;
+				_data.@letterSpacing = numLetterSpacing.value;
+				_data.@kerning = chkKerning.selected;
+				_data.@multiline = chkMultiline.selected;
+				_data.@wordWrap = chkWordWrap.selected;
+				_data.@maxChars = numMaxChars.value;
+				_data.@filters = txtFilter.text;
 				
 				_host.update(_index, _data);
 			}

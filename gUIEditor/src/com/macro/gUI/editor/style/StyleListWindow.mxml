@@ -6,13 +6,16 @@
 		  showStatusBar="false" title="样式列表">
 	<fx:Script>
 		<![CDATA[
+			import com.macro.gUI.GameUI;
 			import com.macro.gUI.assist.TextStyle;
 			import com.macro.gUI.controls.Label;
 			import com.macro.gUI.editor.project.ProjectManager;
 			import com.macro.gUI.editor.project.StyleConfig;
-
+			import com.macro.gUI.skin.StyleDef;
+			
+			import mx.collections.XMLListCollection;
 			import mx.managers.PopUpManager;
-
+			
 			import spark.events.GridEvent;
 
 
@@ -26,80 +29,21 @@
 			{
 				styles = new ArrayList();
 				dataGrid.dataProvider = styles;
-
+				
 				var config:StyleConfig = ProjectManager.inst.styleConfig;
-				for each (var xml:XML in config.configXML.item)
+				for each (var item:XML in config.configXML.item)
 				{
 					var data:Object = new Object();
-					data.key = xml.@id.toString();
-					data.font = xml.@font.toString();
-					data.size = xml.@size.toString();
-					data.color = xml.@color.toString();
-					data.bold = xml.@bold.toString();
-					data.italic = xml.@italic.toString();
-					data.underline = xml.@underline.toString();
-					data.align = xml.@align.toString();
-					data.leftMargin = xml.@leftMargin.toString();
-					data.rightMargin = xml.@rightMargin.toString();
-					data.indent = xml.@indent.toString();
-					data.blockIndent = xml.@blockIndent.toString();
-					data.leading = xml.@leading.toString();
-					data.kerning = xml.@kerning.toString();
-					data.letterSpacing = xml.@letterSpacing.toString();
-					data.multiline = xml.@multiline.toString();
-					data.wordWrap = xml.@wordWrap.toString();
-					data.maxChars = xml.@maxChars.toString();
-					data.filters = xml.@filters.toString();
-
-					data.image = getPreview(data);
+					data.key = item.@id.toString();
+					data.image = getPreview(config.getStyle(item));
 
 					styles.addItem(data);
 				}
 			}
 
 
-			private function getPreview(data:Object):BitmapData
+			private function getPreview(style:TextStyle):BitmapData
 			{
-//				var filter:String = '[new GlowFilter(0x00ff00, 1, 2, 2, 16), ' + 
-//					'new GradientGlowFilter(0, 45, [0xFFFFFF, 0xFF0000, 0xFFFF00, 0x00CCFF], [0, 1, 1, 1], [0, 63, 126, 255], 50, 50, 2.5, 3, "outer", false), ' + 
-//					'new DropShadowFilter(5, 45, 0, 1, 2, 2, 0.5)]';
-
-				var style:TextStyle = new TextStyle();
-				if (data.font != "")
-					style.font = data.font;
-				if (data.size != "")
-					style.size = data.size;
-				if (data.color != "")
-					style.color = data.color;
-				if (data.bold != "")
-					style.bold = data.bold == "true";
-				if (data.italic != "")
-					style.italic = data.italic == "true";
-				if (data.underline != "")
-					style.underline = data.underline == "true";
-				if (data.align != "")
-					style.align = data.align;
-				if (data.leftMargin != "")
-					style.leftMargin = data.leftMargin;
-				if (data.rightMargin != "")
-					style.rightMargin = data.rightMargin;
-				if (data.indent != "")
-					style.indent = data.indent;
-				if (data.blockIndent != "")
-					style.blockIndent = data.blockIndent;
-				if (data.leading != "")
-					style.leading = data.leading;
-				if (data.kerning != "")
-					style.kerning = data.kerning == "true";
-				if (data.letterSpacing != "")
-					style.letterSpacing = data.letterSpacing;
-
-				style.multiline = data.multiline == "true";
-				style.wordWrap = data.wordWrap == "true";
-				style.maxChars = int(data.maxChars);
-				if (data.filters != "")
-					style.filters = FilterUtil.getFilters(data.filters);
-
 				var label:Label = new Label(testStr);
 				label.backgroundColor = 0xffcccccc;
 				label.width = 200;
@@ -113,21 +57,21 @@
 				if (e.rowIndex != -1)
 				{
 					var w:StyleEditor = new StyleEditor();
-					w.init(this, e.rowIndex, styles.getItemAt(e.rowIndex));
+					var item:XML = ProjectManager.inst.styleConfig.getDefine(styles.getItemAt(e.rowIndex).key);
+					w.init(this, e.rowIndex, item);
 					PopUpManager.addPopUp(w, this);
 					PopUpManager.centerPopUp(w);
 				}
 			}
 
-			public function update(index:int, data:Object):void
+			public function update(index:int, item:XML):void
 			{
-				data.image = getPreview(data);
+				var data:Object = styles.getItemAt(index);
+				var style:TextStyle = ProjectManager.inst.styleConfig.getStyle(item);
+				data.image = getPreview(style);
 				styles.setItemAt(data, index);
 
-				ProjectManager.inst.styleConfig.setDefine(data.key, data.font, data.size, data.color, data.bold, data.italic,
-														  data.underline, data.align, data.leftMargin, data.rightMargin, data.indent,
-														  data.blockIndent, data.leading, data.kerning, data.letterSpacing, data.multiline,
-														  data.wordWrap, data.maxChars, data.filters);
+				GameUI.skinManager.setStyle(StyleDef[id], style);
 			}
 		]]>
 	</fx:Script>
