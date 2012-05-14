@@ -2,8 +2,8 @@
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 			   xmlns:s="library://ns.adobe.com/flex/spark"
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   width="280" height="160" close="closeHandler();" title="创建新界面"
-			   windowMove="windowMoveHandler();" creationComplete="creationCompleteHandler(event)">
+			   width="280" height="160" close="closeHandler()" title="创建新界面"
+			   windowMove="windowMoveHandler()" creationComplete="creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
 			import com.macro.gUI.editor.project.CompConfig;

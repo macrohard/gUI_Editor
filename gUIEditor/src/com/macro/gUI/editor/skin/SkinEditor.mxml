@@ -3,10 +3,10 @@
 									   xmlns:s="library://ns.adobe.com/flex/spark"
 									   xmlns:mx="library://ns.adobe.com/flex/mx"
 									   xmlns:customComponents="com.macro.gUI.editor.customComponents.*"
-									   width="640" height="480" close="closeHandler();"
+									   width="640" height="480" close="closeHandler()"
 									   creationComplete="creationCompleteHandler()"
 									   resize="resizeHandler(event)" title="皮肤编辑器"
-									   windowMove="windowMoveHandler();">
+									   windowMove="windowMoveHandler()">
 	<fx:Script>
 		<![CDATA[
 			import com.macro.gUI.GameUI;

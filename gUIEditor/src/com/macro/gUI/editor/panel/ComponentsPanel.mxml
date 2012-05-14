@@ -4,10 +4,10 @@
 									   xmlns:mx="library://ns.adobe.com/flex/mx"
 									   xmlns:flexponential="com.flexponential.*"
 									   xmlns:customComponents="com.macro.gUI.editor.customComponents.*"
-									   width="300" height="280" close="closeHandler();"
+									   width="300" height="280" close="closeHandler()"
 									   creationComplete="creationCompleteHandler()"
 									   resize="resizeHandler(event)" title="组件"
-									   windowMove="windowMoveHandler();">
+									   windowMove="windowMoveHandler()">
 	<fx:Script>
 		<![CDATA[
 			import com.macro.gUI.editor.project.CompConfig;

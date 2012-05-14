@@ -3,6 +3,7 @@ package com.macro.gUI.editor.project
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	import com.macro.gUI.editor.work.Workbench;
 
 
 	/**

@@ -3,9 +3,9 @@
 									   xmlns:s="library://ns.adobe.com/flex/spark"
 									   xmlns:mx="library://ns.adobe.com/flex/mx"
 									   xmlns:customComponents="com.macro.gUI.editor.customComponents.*"
-									   width="650" height="150" close="closeHandler();"
+									   width="650" height="150" close="closeHandler()"
 									   resize="resizeHandler(event)" title="属性"
-									   windowMove="windowMoveHandler();">
+									   windowMove="windowMoveHandler()">
 	<fx:Script>
 		<![CDATA[
 			import mx.events.ResizeEvent;

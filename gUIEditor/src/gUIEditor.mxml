@@ -48,7 +48,7 @@
 			import com.macro.gUI.editor.panel.Inspector;
 			import com.macro.gUI.editor.panel.TreePanel;
 			import com.macro.gUI.editor.project.ProjectManager;
-			import com.macro.gUI.editor.project.Workbench;
+			import com.macro.gUI.editor.work.Workbench;
 			import com.macro.gUI.editor.skin.SkinListWindow;
 			import com.macro.gUI.editor.style.StyleListWindow;
 			
