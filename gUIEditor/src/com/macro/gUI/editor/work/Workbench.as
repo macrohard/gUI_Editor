@@ -4,19 +4,41 @@ package com.macro.gUI.editor.work
 	import com.macro.gUI.composite.*;
 	import com.macro.gUI.containers.*;
 	import com.macro.gUI.controls.*;
-	import com.macro.gUI.core.AbstractContainer;
 	import com.macro.gUI.core.IContainer;
 	import com.macro.gUI.core.IControl;
-	import com.macro.gUI.editor.project.CompConfig;
+	import com.macro.gUI.editor.project.inspectors.BackgroundPanelInspector;
+	import com.macro.gUI.editor.project.inspectors.ButtonInspector;
+	import com.macro.gUI.editor.project.inspectors.CanvasInspector;
+	import com.macro.gUI.editor.project.inspectors.CheckBoxInspector;
+	import com.macro.gUI.editor.project.inspectors.ComboBoxInspector;
+	import com.macro.gUI.editor.project.inspectors.ContainerInspector;
+	import com.macro.gUI.editor.project.inspectors.HScrollBarInspector;
+	import com.macro.gUI.editor.project.inspectors.HSliderInspector;
+	import com.macro.gUI.editor.project.inspectors.IInspector;
+	import com.macro.gUI.editor.project.inspectors.IconButtonInspector;
+	import com.macro.gUI.editor.project.inspectors.ImageBoxInspector;
+	import com.macro.gUI.editor.project.inspectors.ImageButtonInspector;
+	import com.macro.gUI.editor.project.inspectors.LabelInspector;
+	import com.macro.gUI.editor.project.inspectors.LinkButtonInspector;
+	import com.macro.gUI.editor.project.inspectors.ListInspector;
+	import com.macro.gUI.editor.project.inspectors.PanelInspector;
+	import com.macro.gUI.editor.project.inspectors.ProgressBarInspector;
+	import com.macro.gUI.editor.project.inspectors.RadioButtonInspector;
+	import com.macro.gUI.editor.project.inspectors.ScrollPanelInspector;
+	import com.macro.gUI.editor.project.inspectors.SliceInspector;
+	import com.macro.gUI.editor.project.inspectors.TabPanelInspector;
+	import com.macro.gUI.editor.project.inspectors.TextAreaInspector;
+	import com.macro.gUI.editor.project.inspectors.TextInputInspector;
+	import com.macro.gUI.editor.project.inspectors.TitleBarInspector;
+	import com.macro.gUI.editor.project.inspectors.ToggleButtonInspector;
+	import com.macro.gUI.editor.project.inspectors.VScrollBarInspector;
+	import com.macro.gUI.editor.project.inspectors.VSliderInspector;
+	import com.macro.gUI.editor.project.inspectors.WindowInspector;
 	
 	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.ui.Keyboard;
-	import flash.utils.getDefinitionByName;
+	import flash.utils.Dictionary;
 	
 	import mx.core.UIComponent;
 	import mx.events.DragEvent;
@@ -32,26 +54,22 @@ package com.macro.gUI.editor.work
 		 */
 		public var unsaved:Boolean;
 
-
+		/**
+		 * 界面文档容器
+		 */
+		public var docContainer:IContainer;
+		
+		/**
+		 * 当前选择的控件
+		 */
+		public var selectedControl:IControl;
+		
+		
 		private var _displayObjectContainer:Sprite;
 
-		private var _doc:IContainer;
+		private var _cgroup:CGoup;
 
-		private var _stage:IContainer;
-
-		private var _mouseControl:IControl;
-		
-		
-
-		private var _tl:CPoint;
-
-		private var _tr:CPoint;
-
-		private var _bl:CPoint;
-
-		private var _br:CPoint;
-		
-		private var _controlKey:Boolean;
+		private var _inspectors:Dictionary;
 
 
 		public function Workbench()
@@ -62,220 +80,48 @@ package com.macro.gUI.editor.work
 			_displayObjectContainer.addEventListener(MouseEvent.CLICK, onClickHandler);
 			addChild(_displayObjectContainer);
 			GameUI.init(_displayObjectContainer);
-			_stage = GameUI.uiManager.stage;
-
-			_tl = new CPoint(0);
-			_tl.addEventListener(Event.CHANGE, onTLChanged);
-			_tr = new CPoint(1);
-			_tr.addEventListener(Event.CHANGE, onTRChanged);
-			_bl = new CPoint(2);
-			_bl.addEventListener(Event.CHANGE, onBLChanged);
-			_br = new CPoint(3);
-			_br.addEventListener(Event.CHANGE, onBRChanged);
+			
+			_cgroup = new CGoup(this);
+			addChild(_cgroup);
+			
 
 			addEventListener(ResizeEvent.RESIZE, onResizeHandler);
 			addEventListener(DragEvent.DRAG_ENTER, dragEnterHandler);
 			addEventListener(DragEvent.DRAG_DROP, dragDropHandler);
 			
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			
 
-			// TEMP
-			Button;
-			Canvas;
-			IconButton;
-			ImageBox;
-			ImageButton;
-			Label;
-			LinkButton;
-			Slice;
-			TextInput;
-			TitleBar;
-			ToggleButton;
-
-			CheckBox;
-			ComboBox;
-			HScrollBar;
-			HSlider;
-			List;
-			ProgressBar;
-			RadioButton;
-			TextArea;
-			VScrollBar;
-			VSlider;
-
-			BackgroundPanel;
-			Container;
-			Panel;
-			ScrollPanel;
-			TabPanel;
-			Window;
-		}
-		
-		protected function onAddedToStage(event:Event):void
-		{
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDownHandler);
-			stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUpHandler);
-		}
-		
-		protected function onKeyDownHandler(e:KeyboardEvent):void
-		{
-			_controlKey = e.controlKey;
-		}
-		
-		protected function onKeyUpHandler(e:KeyboardEvent):void
-		{
-			_controlKey = e.controlKey;
-		}
-		
-		protected function onBRChanged(e:Event):void
-		{
-			if (_controlKey && _mouseControl != _doc)
-			{
-				_tl.x = _br.x - _mouseControl.width;
-				_tl.y = _br.y - _mouseControl.height;
-				
-				_tr.x = _br.x;
-				_tr.y = _tl.y;
-				
-				_bl.x = _tl.x;
-				_bl.y = _br.y;
-				
-				moveControl();
-				return;
-			}
+			// 初始化控件监视器
+			_inspectors = new Dictionary();
+			_inspectors["Label"] = new LabelInspector();
+			_inspectors["LinkButton"] = new LinkButtonInspector();
+			_inspectors["Button"] = new ButtonInspector();
+			_inspectors["IconButton"] = new IconButtonInspector();
+			_inspectors["ToggleButton"] = new ToggleButtonInspector();
+			_inspectors["TextInput"] = new TextInputInspector();
+			_inspectors["ImageBox"] = new ImageBoxInspector();
+			_inspectors["ImageButton"] = new ImageButtonInspector();
+			_inspectors["Canvas"] = new CanvasInspector();
+			_inspectors["Slice"] = new SliceInspector();
+			_inspectors["TitleBar"] = new TitleBarInspector();
 			
-			if (_br.x <= _bl.x)
-				return;
+			_inspectors["CheckBox"] = new CheckBoxInspector();
+			_inspectors["RadioButton"] = new RadioButtonInspector();
+			_inspectors["ComboBox"] = new ComboBoxInspector();
+			_inspectors["List"] = new ListInspector();
+			_inspectors["TextArea"] = new TextAreaInspector();
+			_inspectors["ProgressBar"] = new ProgressBarInspector();
+			_inspectors["HScrollBar"] = new HScrollBarInspector();
+			_inspectors["VScrollBar"] = new VScrollBarInspector();
+			_inspectors["HSlider"] = new HSliderInspector();
+			_inspectors["VSlider"] = new VSliderInspector();
 			
-			if (_br.y <= _tr.y)
-				return;
-			
-			_tr.x = _br.x;
-			_bl.y = _br.y;
-			resizeControl();
-		}
-
-		protected function onBLChanged(e:Event):void
-		{
-			if (_controlKey && _mouseControl != _doc)
-			{
-				_tl.x = _bl.x;
-				_tl.y = _bl.y - _mouseControl.height;
-				
-				_tr.x = _bl.x + _mouseControl.width;
-				_tr.y = _tl.y;
-				
-				_br.x = _tr.x;
-				_br.y = _bl.y;
-				
-				moveControl();
-				return;
-			}
-			
-			if (_bl.x >= _br.x)
-				return;
-			
-			if (_bl.y <= _tl.y)
-				return;
-			
-			if (_mouseControl != _doc)
-			{
-				_tl.x = _bl.x;
-				_br.y = _bl.y;
-				moveControl();
-			}
-			else
-			{
-				_bl.x = _tl.x;
-				_br.y = _bl.y;
-			}
-			resizeControl();
-		}
-
-		protected function onTRChanged(e:Event):void
-		{
-			if (_controlKey && _mouseControl != _doc)
-			{
-				_tl.x = _tr.x - _mouseControl.width;
-				_tl.y = _tr.y;
-				
-				_bl.x = _tl.x;
-				_bl.y = _tr.y + _mouseControl.height;
-				
-				_br.x = _tr.x;
-				_br.y = _bl.y;
-				
-				moveControl();
-				return;
-			}
-			
-			if (_tr.x <= _tl.x)
-				return;
-			
-			if (_tr.y >= _br.y)
-				return;
-			
-			if (_mouseControl != _doc)
-			{
-				_br.x = _tr.x;
-				_tl.y = _tr.y;
-				moveControl();
-			}
-			else
-			{
-				_br.x = _tr.x;
-				_tr.y = _tl.y;
-			}
-			resizeControl();
-		}
-
-		protected function onTLChanged(e:Event):void
-		{
-			if (_controlKey && _mouseControl != _doc)
-			{
-				_tr.x = _tl.x + _mouseControl.width;
-				_tr.y = _tl.y;
-				
-				_bl.x = _tl.x;
-				_bl.y = _tl.y + _mouseControl.height;
-				
-				_br.x = _tr.x;
-				_br.y = _bl.y;
-				
-				moveControl();
-				return;
-			}
-			
-			if (_tl.x >= _tr.x)
-				return;
-			
-			if (_tl.y >= _bl.y)
-				return;
-			
-			if (_mouseControl != _doc)
-			{
-				_bl.x = _tl.x;
-				_tr.y = _tl.y;
-				moveControl();
-			}
-			else
-			{
-				_tl.x = _bl.x;
-				_tl.y = _tr.y;
-			}
-			resizeControl();
-		}
-		
-		private function resizeControl():void
-		{
-			_mouseControl.resize(_br.x - _bl.x, _br.y - _tr.y);
-		}
-		
-		private function moveControl():void
-		{
-			var p:Point = _mouseControl.parent.globalToLocal(new Point(_tl.x, _tl.y));
-			_mouseControl.x = p.x - _mouseControl.parent.margin.left;
-			_mouseControl.y = p.y - _mouseControl.parent.margin.top;
+			_inspectors["Container"] = new ContainerInspector();
+			_inspectors["Panel"] = new PanelInspector();
+			_inspectors["ScrollPanel"] = new ScrollPanelInspector();
+			_inspectors["BackgroundPanel"] = new BackgroundPanelInspector();
+			_inspectors["TabPanel"] = new TabPanelInspector();
+			_inspectors["Window"] = new WindowInspector();
 		}
 		
 		
@@ -291,38 +137,8 @@ package com.macro.gUI.editor.work
 
 		protected function onClickHandler(e:MouseEvent):void
 		{
-			_mouseControl = GameUI.uiManager.interactiveManager.mouseControl;
-			if (_mouseControl == null)
-			{
-				if (_tl.parent == this)
-					this.removeChild(_tl);
-				if (_tr.parent == this)
-					this.removeChild(_tr);
-				if (_bl.parent == this)
-					this.removeChild(_bl);
-				if (_br.parent == this)
-					this.removeChild(_br);
-			}
-			else
-			{
-				var p:Point = _mouseControl.localToGlobal();
-				_tl.x = p.x;
-				_tl.y = p.y;
-
-				_tr.x = p.x + _mouseControl.width;
-				_tr.y = p.y;
-
-				_bl.x = p.x;
-				_bl.y = p.y + _mouseControl.height;
-
-				_br.x = _tr.x;
-				_br.y = _bl.y;
-
-				this.addChild(_tl);
-				this.addChild(_tr);
-				this.addChild(_bl);
-				this.addChild(_br);
-			}
+			selectedControl = GameUI.uiManager.interactiveManager.mouseControl;
+			_cgroup.select();
 		}
 
 		private function dragEnterHandler(e:DragEvent):void
@@ -335,23 +151,23 @@ package com.macro.gUI.editor.work
 
 		private function dragDropHandler(e:DragEvent):void
 		{
-			if (_doc == null)
+			if (docContainer == null)
 				return;
 			
 			var xx:int = _displayObjectContainer.mouseX;
 			var yy:int = _displayObjectContainer.mouseY;
 			
-			if (xx > _doc.width || yy > _doc.height)
+			if (xx > docContainer.width || yy > docContainer.height)
 				return;
 			
-			var ic:IControl = CompConfig.getControl(e.dragSource.dataForFormat("component") as String);
+			var ic:IControl = getInspector(e.dragSource.dataForFormat("component") as String).getControl();
 			
-			var ret:Vector.<IControl> = GameUI.uiManager.interactiveManager.findTargetControl(_doc, _displayObjectContainer.mouseX, _displayObjectContainer.mouseY);
+			var ret:Vector.<IControl> = GameUI.uiManager.interactiveManager.findTargetControl(docContainer, _displayObjectContainer.mouseX, _displayObjectContainer.mouseY);
 			if (ret == null)
 			{
-				ic.x = xx - _doc.margin.left;
-				ic.y = yy - _doc.margin.top;
-				_doc.addChild(ic);
+				ic.x = xx - docContainer.margin.left;
+				ic.y = yy - docContainer.margin.top;
+				docContainer.addChild(ic);
 			}
 			else
 			{
@@ -364,6 +180,13 @@ package com.macro.gUI.editor.work
 			}
 		}
 		
+		
+		private function getInspector(name:String):IInspector
+		{
+			return _inspectors[name];
+		}
+		
+		
 
 
 		/**
@@ -372,10 +195,11 @@ package com.macro.gUI.editor.work
 		 */
 		public function close():void
 		{
-			if (_doc != null)
-			{
-				_stage.removeChild(_doc);
-			}
+			if (docContainer == null)
+				return;
+			
+			GameUI.uiManager.stage.removeChild(docContainer);
+			docContainer = null;
 			unsaved = false;
 		}
 
@@ -386,11 +210,11 @@ package com.macro.gUI.editor.work
 		 */
 		public function create(base:String):void
 		{
-			_doc = CompConfig.getControl(base) as IContainer;
-			if (_doc == null)
+			docContainer = getInspector(base).getControl() as IContainer;
+			if (docContainer == null)
 				return;
 
-			_stage.addChild(_doc);
+			GameUI.uiManager.stage.addChild(docContainer);
 			unsaved = true;
 		}
 

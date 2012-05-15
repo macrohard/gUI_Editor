@@ -10,19 +10,54 @@
 									   windowMove="windowMoveHandler()">
 	<fx:Script>
 		<![CDATA[
-			import com.macro.gUI.editor.project.CompConfig;
-			
 			import mx.collections.XMLListCollection;
 			import mx.controls.treeClasses.TreeItemRenderer;
 			import mx.core.DragSource;
 			import mx.core.UIComponent;
-			import mx.events.DragEvent;
-			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
 			import mx.managers.DragManager;
 			import mx.managers.PopUpManager;
 			
 			import spark.components.Image;
+			
+			
+			public static const configXML:XMLList =
+				<>
+					<category type="Controls">
+						<item type="Label"/>
+						<item type="LinkButton"/>
+						<item type="Button"/>
+						<item type="IconButton"/>
+						<item type="ToggleButton"/>
+						<item type="TextInput"/>
+						<item type="ImageBox"/>
+						<item type="ImageButton"/>
+						<item type="Canvas"/>
+						<item type="Slice"/>
+						<item type="TitleBar"/>
+					</category>
+					<category type="Composites">
+						<item type="CheckBox"/>
+						<item type="RadioButton"/>
+						<item type="ComboBox"/>
+						<item type="List"/>
+						<item type="TextArea"/>
+						<item type="ProgressBar"/>
+						<item type="HScrollBar"/>
+						<item type="VScrollBar"/>
+						<item type="HSlider"/>
+						<item type="VSlider"/>
+					</category>
+					<category type="Containers">
+						<item type="Container"/>
+						<item type="Panel"/>
+						<item type="ScrollPanel"/>
+						<item type="BackgroundPanel"/>
+						<item type="TabPanel"/>
+						<item type="Window"/>
+					</category>
+				</>;
+			
 			
 			private var dragImage:Image;
 
@@ -54,11 +89,11 @@
 
 			protected function creationCompleteHandler():void
 			{
-				tree.dataProvider = new XMLListCollection(CompConfig.configXML);
+				tree.dataProvider = new XMLListCollection(configXML);
 				tree.validateNow();
-				tree.expandChildrenOf(CompConfig.configXML[0], true);
-				tree.expandChildrenOf(CompConfig.configXML[1], true);
-				tree.expandChildrenOf(CompConfig.configXML[2], true);
+				tree.expandChildrenOf(configXML[0], true);
+				tree.expandChildrenOf(configXML[1], true);
+				tree.expandChildrenOf(configXML[2], true);
 				
 				tree.setStyle("disclosureClosedIcon", null);
 				tree.setStyle("disclosureOpenIcon", null);

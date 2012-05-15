@@ -3,8 +3,31 @@
 						  xmlns:s="library://ns.adobe.com/flex/spark"
 						  xmlns:mx="library://ns.adobe.com/flex/mx"
 						  xmlns:inspectors="com.macro.gUI.editor.project.inspectors.*"
-						  width="100%" height="120">
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
+						  width="100%" height="120" implements="com.macro.gUI.editor.project.inspectors.IInspector">
+	<fx:Script>
+		<![CDATA[
+			import com.macro.gUI.core.IControl;
+			
+			import mx.controls.Menu;
+			
+			public function getControl(xml:XML=null):IControl
+			{
+				// TODO Auto Generated method stub
+				return null;
+			}
+			
+			public function getMenu():Menu
+			{
+				// TODO Auto Generated method stub
+				return null;
+			}
+			
+			public function getXML(control:IControl):XML
+			{
+				// TODO Auto Generated method stub
+				return null;
+			}
+			
+		]]>
+	</fx:Script>
 </inspectors:InspectorBase>

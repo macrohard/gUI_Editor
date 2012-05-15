@@ -6,7 +6,7 @@
 			   windowMove="windowMoveHandler()" creationComplete="creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
-			import com.macro.gUI.editor.project.CompConfig;
+			import com.macro.gUI.editor.panel.ComponentsPanel;
 			import com.macro.gUI.editor.project.ProjectManager;
 			
 			import mx.collections.XMLListCollection;
@@ -44,7 +44,7 @@
 			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
-				var xml:XML = CompConfig.configXML[2];
+				var xml:XML = ComponentsPanel.configXML[2];
 				cmbBase.dataProvider = new XMLListCollection(xml.item);
 			}
 			
