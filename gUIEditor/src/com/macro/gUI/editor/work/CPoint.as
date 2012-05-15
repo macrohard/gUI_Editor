@@ -22,28 +22,41 @@ package com.macro.gUI.editor.work
 			else if (type == 3)
 				this.graphics.drawRect(-8, -8, 8, 8);
 			
-			this.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDownHandler);
-			this.addEventListener(MouseEvent.MOUSE_UP, onMouseUpHandler);
+			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			this.addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
 		}
+		
+		protected function onAddedToStage(event:Event):void
+		{
+			this.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDownHandler);
+			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUpHandler);
+		}
+		
+		protected function onRemovedFromStage(event:Event):void
+		{
+			this.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDownHandler);
+			stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUpHandler);
+		}
+		
 		
 		protected function onMouseUpHandler(e:MouseEvent):void
 		{
 			this.stopDrag();
-			this.parent.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveHandler);
-			e.stopImmediatePropagation();
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveHandler);
+			e.stopPropagation();
 		}
 		
 		protected function onMouseDownHandler(e:MouseEvent):void
 		{
 			this.startDrag();
-			this.parent.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveHandler);
-			e.stopImmediatePropagation();
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMoveHandler);
+			e.stopPropagation();
 		}
 		
 		protected function onMouseMoveHandler(e:MouseEvent):void
 		{
 			dispatchEvent(new Event(Event.CHANGE));
-			e.stopImmediatePropagation();
+			e.stopPropagation();
 		}
 	}
 }

@@ -132,7 +132,7 @@ package com.macro.gUI.editor.work
 		
 		protected function onBRChanged(e:Event):void
 		{
-			if (_controlKey)
+			if (_controlKey && _mouseControl != _doc)
 			{
 				_tl.x = _br.x - _mouseControl.width;
 				_tl.y = _br.y - _mouseControl.height;
@@ -160,14 +160,7 @@ package com.macro.gUI.editor.work
 
 		protected function onBLChanged(e:Event):void
 		{
-			if (_mouseControl == _doc)
-			{
-				_bl.x = _tl.x;
-				_bl.y = _br.y;
-				return;
-			}
-			
-			if (_controlKey)
+			if (_controlKey && _mouseControl != _doc)
 			{
 				_tl.x = _bl.x;
 				_tl.y = _bl.y - _mouseControl.height;
@@ -188,22 +181,23 @@ package com.macro.gUI.editor.work
 			if (_bl.y <= _tl.y)
 				return;
 			
-			_tl.x = _bl.x;
-			_br.y = _bl.y;
-			moveControl();
+			if (_mouseControl != _doc)
+			{
+				_tl.x = _bl.x;
+				_br.y = _bl.y;
+				moveControl();
+			}
+			else
+			{
+				_bl.x = _tl.x;
+				_br.y = _bl.y;
+			}
 			resizeControl();
 		}
 
 		protected function onTRChanged(e:Event):void
 		{
-			if (_mouseControl == _doc)
-			{
-				_tr.x = _br.x;
-				_tr.y = _tl.y;
-				return;
-			}
-			
-			if (_controlKey)
+			if (_controlKey && _mouseControl != _doc)
 			{
 				_tl.x = _tr.x - _mouseControl.width;
 				_tl.y = _tr.y;
@@ -224,22 +218,23 @@ package com.macro.gUI.editor.work
 			if (_tr.y >= _br.y)
 				return;
 			
-			_br.x = _tr.x;
-			_tl.y = _tr.y;
-			moveControl();
+			if (_mouseControl != _doc)
+			{
+				_br.x = _tr.x;
+				_tl.y = _tr.y;
+				moveControl();
+			}
+			else
+			{
+				_br.x = _tr.x;
+				_tr.y = _tl.y;
+			}
 			resizeControl();
 		}
 
 		protected function onTLChanged(e:Event):void
 		{
-			if (_mouseControl == _doc)
-			{
-				_tl.x = _bl.x;
-				_tl.y = _tr.y;
-				return;
-			}
-			
-			if (_controlKey)
+			if (_controlKey && _mouseControl != _doc)
 			{
 				_tr.x = _tl.x + _mouseControl.width;
 				_tr.y = _tl.y;
@@ -260,9 +255,17 @@ package com.macro.gUI.editor.work
 			if (_tl.y >= _bl.y)
 				return;
 			
-			_bl.x = _tl.x;
-			_tr.y = _tl.y;
-			moveControl();
+			if (_mouseControl != _doc)
+			{
+				_bl.x = _tl.x;
+				_tr.y = _tl.y;
+				moveControl();
+			}
+			else
+			{
+				_tl.x = _bl.x;
+				_tl.y = _tr.y;
+			}
 			resizeControl();
 		}
 		
