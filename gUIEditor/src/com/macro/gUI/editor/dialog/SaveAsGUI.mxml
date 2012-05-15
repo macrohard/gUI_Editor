@@ -3,13 +3,14 @@
 			   xmlns:s="library://ns.adobe.com/flex/spark"
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
 			   width="280" height="120" close="closeHandler()" title="换名保存界面"
-			   windowMove="windowMoveHandler()">
+			   windowMove="windowMoveHandler()" creationComplete="creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
 			import com.macro.gUI.editor.project.ProjectManager;
 			
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
 			
@@ -63,6 +64,11 @@
 					ProjectManager.inst.saveAsDoc(txtName.text);
 					closeHandler();
 				}
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				focusManager.setFocus(txtName);
 			}
 			
 		]]>
