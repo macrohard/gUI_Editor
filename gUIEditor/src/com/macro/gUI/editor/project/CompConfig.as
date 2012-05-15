@@ -1,11 +1,19 @@
 package com.macro.gUI.editor.project
 {
+	import com.macro.gUI.core.IControl;
 	import com.macro.gUI.editor.project.inspectors.IInspector;
 	
 	import flash.utils.getDefinitionByName;
 
 	public class CompConfig
 	{
+		private static const CONTAINER_QNAME:String = "com.macro.gUI.containers.";
+		
+		private static const CONTROL_QNAME:String = "com.macro.gUI.controls.";
+		
+		private static const COMPOSITE_QNAME:String = "com.macro.gUI.composite.";
+		
+		
 		public static const configXML:XMLList =
 			<>
 				<category type="Controls">
@@ -47,6 +55,26 @@ package com.macro.gUI.editor.project
 		public static function getInspector(name:String):IInspector
 		{
 			var clz:Class = getDefinitionByName("com.macro.gUI.editor.project.inspectors." + name + "Inspector") as Class;
+			return new clz();
+		}
+		
+		public static function getControl(type:String):IControl
+		{
+			var qname:String;
+			if (configXML[0].item.(@type == type)[0] != null)
+			{
+				qname = CONTROL_QNAME + type;
+			}
+			else if (configXML[1].item.(@type == type)[0] != null)
+			{
+				qname = COMPOSITE_QNAME + type;
+			}
+			else if (configXML[2].item.(@type == type)[0] != null)
+			{
+				qname = CONTAINER_QNAME + type;
+			}
+			
+			var clz:Class = getDefinitionByName(qname) as Class;
 			return new clz();
 		}
 	}

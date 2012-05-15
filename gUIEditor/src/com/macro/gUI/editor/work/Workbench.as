@@ -4,8 +4,10 @@ package com.macro.gUI.editor.work
 	import com.macro.gUI.composite.*;
 	import com.macro.gUI.containers.*;
 	import com.macro.gUI.controls.*;
+	import com.macro.gUI.core.AbstractContainer;
 	import com.macro.gUI.core.IContainer;
 	import com.macro.gUI.core.IControl;
+	import com.macro.gUI.editor.project.CompConfig;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -24,11 +26,6 @@ package com.macro.gUI.editor.work
 
 	public class Workbench extends UIComponent
 	{
-		private static const CONTAINER_QNAME:String = "com.macro.gUI.containers.";
-
-		private static const CONTROL_QNAME:String = "com.macro.gUI.controls.";
-
-		private static const COMPOSITE_QNAME:String = "com.macro.gUI.composite.";
 
 		/**
 		 * 当有修改时，标记文档未保存
@@ -277,9 +274,10 @@ package com.macro.gUI.editor.work
 		private function moveControl():void
 		{
 			var p:Point = _mouseControl.parent.globalToLocal(new Point(_tl.x, _tl.y));
-			_mouseControl.x = p.x;
-			_mouseControl.y = p.y;
+			_mouseControl.x = p.x - _mouseControl.parent.margin.left;
+			_mouseControl.y = p.y - _mouseControl.parent.margin.top;
 		}
+		
 		
 
 		protected function onResizeHandler(e:ResizeEvent):void
@@ -337,7 +335,35 @@ package com.macro.gUI.editor.work
 
 		private function dragDropHandler(e:DragEvent):void
 		{
+			if (_doc == null)
+				return;
+			
+			var xx:int = _displayObjectContainer.mouseX;
+			var yy:int = _displayObjectContainer.mouseY;
+			
+			if (xx > _doc.width || yy > _doc.height)
+				return;
+			
+			var ic:IControl = CompConfig.getControl(e.dragSource.dataForFormat("component") as String);
+			
+			var ret:Vector.<IControl> = GameUI.uiManager.interactiveManager.findTargetControl(_doc, _displayObjectContainer.mouseX, _displayObjectContainer.mouseY);
+			if (ret == null)
+			{
+				ic.x = xx - _doc.margin.left;
+				ic.y = yy - _doc.margin.top;
+				_doc.addChild(ic);
+			}
+			else
+			{
+				var t:IControl = ret[0];
+				var c:IContainer = (t is IContainer ? t as IContainer : t.parent);
+				var p:Point = c.globalToLocal(new Point(xx, yy));
+				ic.x = p.x - c.margin.left;
+				ic.y = p.y - c.margin.top;
+				c.addChild(ic);
+			}
 		}
+		
 
 
 		/**
@@ -360,7 +386,7 @@ package com.macro.gUI.editor.work
 		 */
 		public function create(base:String):void
 		{
-			_doc = getControl(CONTAINER_QNAME + base) as IContainer;
+			_doc = CompConfig.getControl(base) as IContainer;
 			if (_doc == null)
 				return;
 
@@ -387,13 +413,6 @@ package com.macro.gUI.editor.work
 		{
 			unsaved = false;
 			return null;
-		}
-
-
-		private function getControl(qname:String):IControl
-		{
-			var clz:Class = getDefinitionByName(qname) as Class;
-			return new clz();
 		}
 	}
 }
