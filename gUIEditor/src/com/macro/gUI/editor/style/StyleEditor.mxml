@@ -61,7 +61,7 @@
 				this.title += ": " + _data.@id;
 				
 				cmbAlign.dataProvider = _alignMode;
-				if (_data.@align == "")
+				if (_data.@align.toString() == "")
 					_data.@align = "left";
 				
 				for (var i:int = 0; i < _alignMode.length; i++)
@@ -76,36 +76,36 @@
 				txtFont.text = _data.@font;
 				txtFilter.text = _data.@filters;
 				
-				if (_data.@size != "")
+				if (_data.@size.toString() != "")
 					numSize.value = int(_data.@size);
-				if (_data.@color != "")
+				if (_data.@color.toString() != "")
 					pikColor.selectedColor = int(_data.@color);
-				if (_data.@bold != "")
+				if (_data.@bold.toString() != "")
 					chkBold.selected = _data.@bold == "true";
-				if (_data.@italic != "")
+				if (_data.@italic.toString() != "")
 					chkItalic.selected = _data.@italic == "true";
-				if (_data.@underline != "")
+				if (_data.@underline.toString() != "")
 					chkUnderline.selected = _data.@underline == "true";
 				
-				if (_data.@leftMargin != "")
+				if (_data.@leftMargin.toString() != "")
 					numLeftMargin.value = int(_data.@leftMargin);
-				if (_data.@rightMargin != "")
+				if (_data.@rightMargin.toString() != "")
 					numRightMargin.value = int(_data.@rightMargin);
-				if (_data.@indent != "")
+				if (_data.@indent.toString() != "")
 					numIndent.value = int(_data.@indent);
-				if (_data.@blockIndent != "")
+				if (_data.@blockIndent.toString() != "")
 					numBlockIndent.value = int(_data.@blockIndent);
-				if (_data.@leading != "")
+				if (_data.@leading.toString() != "")
 					numLeading.value = int(_data.@leading);
-				if (_data.@letterSpacing != "")
+				if (_data.@letterSpacing.toString() != "")
 					numLetterSpacing.value = int(_data.@letterSpacing);
-				if (_data.@multiline != "")
+				if (_data.@multiline.toString() != "")
 					chkMultiline.selected = _data.@multiline == "true";
-				if (_data.@wordWrap != "")
+				if (_data.@wordWrap.toString() != "")
 					chkWordWrap.selected = _data.@wordWrap == "true";
-				if (_data.@kerning != "")
+				if (_data.@kerning.toString() != "")
 					chkKerning.selected = _data.@kerning == "true";
-				if (_data.@maxChars != "")
+				if (_data.@maxChars.toString() != "")
 					numMaxChars.value = int(_data.@maxChars);
 			}
 

@@ -94,39 +94,39 @@ package com.macro.gUI.editor.project
 			//					'new DropShadowFilter(5, 45, 0, 1, 2, 2, 0.5)]';
 			
 			var style:TextStyle = new TextStyle();
-			if (item.@font != "")
+			if (item.@font.toString() != "")
 				style.font = item.@font;
-			if (item.@size != "")
+			if (item.@size.toString() != "")
 				style.size = item.@size;
-			if (item.@color != "")
+			if (item.@color.toString() != "")
 				style.color = item.@color;
-			if (item.@bold != "")
+			if (item.@bold.toString() != "")
 				style.bold = item.@bold == "true";
-			if (item.@italic != "")
+			if (item.@italic.toString() != "")
 				style.italic = item.@italic == "true";
-			if (item.@underline != "")
+			if (item.@underline.toString() != "")
 				style.underline = item.@underline == "true";
-			if (item.@align != "")
+			if (item.@align.toString() != "")
 				style.align = item.@align;
-			if (item.@leftMargin != "")
+			if (item.@leftMargin.toString() != "")
 				style.leftMargin = item.@leftMargin;
-			if (item.@rightMargin != "")
+			if (item.@rightMargin.toString() != "")
 				style.rightMargin = item.@rightMargin;
-			if (item.@indent != "")
+			if (item.@indent.toString() != "")
 				style.indent = item.@indent;
-			if (item.@blockIndent != "")
+			if (item.@blockIndent.toString() != "")
 				style.blockIndent = item.@blockIndent;
-			if (item.@leading != "")
+			if (item.@leading.toString() != "")
 				style.leading = item.@leading;
-			if (item.@kerning != "")
+			if (item.@kerning.toString() != "")
 				style.kerning = item.@kerning == "true";
-			if (item.@letterSpacing != "")
+			if (item.@letterSpacing.toString() != "")
 				style.letterSpacing = item.@letterSpacing;
 			
 			style.multiline = item.@multiline == "true";
 			style.wordWrap = item.@wordWrap == "true";
 			style.maxChars = int(item.@maxChars);
-			if (item.@filters != "")
+			if (item.@filters.toString() != "")
 				style.filters = getFilters(item.@filters);
 			
 			return style;
