@@ -21,7 +21,7 @@
 			import mx.managers.PopUpManager;
 			
 			
-			private var _host:SkinListWindow;
+			private var _holder:SkinListWindow;
 			private var _index:int;
 			private var _data:XML;
 			
@@ -62,9 +62,9 @@
 				}
 			}
 			
-			public function init(host:SkinListWindow, index:int, data:XML):void
+			public function init(holder:SkinListWindow, index:int, data:XML):void
 			{
-				_host = host;
+				_holder = holder;
 				_index = index;
 				_data = data;
 			}
@@ -216,7 +216,7 @@
 					_data.@height = _grid.height;
 					_data.@align = _align;
 					
-					_host.update(_index, _data, _source);
+					_holder.update(_index, _data, _source);
 					closeHandler();
 					return;
 				}
@@ -238,7 +238,7 @@
 							_data.@height = _grid.height;
 							_data.@align = _align;
 							_data.@filename = original.name;
-							_host.update(_index, _data, _source);
+							_holder.update(_index, _data, _source);
 							closeHandler();
 						}
 					});
@@ -253,7 +253,7 @@
 					_data.@height = _grid.height;
 					_data.@align = _align;
 					_data.@filename = original.name;
-					_host.update(_index, _data, _source);
+					_holder.update(_index, _data, _source);
 					closeHandler();
 				}
 			}

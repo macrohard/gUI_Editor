@@ -12,7 +12,7 @@
 			import mx.managers.PopUpManager;
 
 
-			private var _host:StyleListWindow;
+			private var _holder:StyleListWindow;
 
 			private var _index:int;
 
@@ -49,9 +49,9 @@
 				}
 			}
 			
-			public function init(host:StyleListWindow, index:int, data:XML):void
+			public function init(holder:StyleListWindow, index:int, data:XML):void
 			{
-				_host = host;
+				_holder = holder;
 				_index = index;
 				_data = data;
 			}
@@ -137,7 +137,7 @@
 				_data.@maxChars = numMaxChars.value;
 				_data.@filters = txtFilter.text;
 				
-				_host.update(_index, _data);
+				_holder.update(_index, _data);
 			}
 
 			protected function resetHandler():void
