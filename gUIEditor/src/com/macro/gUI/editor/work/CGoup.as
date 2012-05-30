@@ -6,7 +6,9 @@ package com.macro.gUI.editor.work
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.ui.Keyboard;
 	
 	public class CGoup extends Sprite
 	{
@@ -18,14 +20,16 @@ package com.macro.gUI.editor.work
 		
 		private var _br:CPoint;
 		
-		private var _controlKey:Boolean;
-		
 		private var _workbench:Workbench;
+		
+		private var _offsetP:Point;
 		
 		
 		public function CGoup(workbench:Workbench)
 		{
 			_workbench = workbench;
+			this.buttonMode = true;
+			this.useHandCursor = true;
 			
 			_tl = new CPoint(0);
 			_tl.addEventListener(Event.CHANGE, onTLChanged);
@@ -36,42 +40,55 @@ package com.macro.gUI.editor.work
 			_br = new CPoint(3);
 			_br.addEventListener(Event.CHANGE, onBRChanged);
 			
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 		}
 		
-		protected function onAddedToStage(event:Event):void
+		protected function addedToStageHandler(e:Event):void
 		{
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDownHandler);
-			stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUpHandler);
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler);
+			stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
 		}
 		
-		protected function onKeyDownHandler(e:KeyboardEvent):void
+		protected function keyDownHandler(e:KeyboardEvent):void
 		{
-			_controlKey = e.controlKey;
+			if (e.keyCode == Keyboard.ESCAPE)
+			{
+				_workbench.selectedControl = null;
+				select();
+			}
 		}
 		
-		protected function onKeyUpHandler(e:KeyboardEvent):void
+		protected function mouseDownHandler(e:MouseEvent):void
 		{
-			_controlKey = e.controlKey;
+			_offsetP = new Point(_workbench.mouseX - _tl.x, _workbench.mouseY - _tl.y);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		}
+		
+		protected function mouseUpHandler(e:MouseEvent):void
+		{
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		}
+		
+		protected function mouseMoveHandler(e:MouseEvent):void
+		{
+			if (_workbench.selectedControl == null || _workbench.selectedControl == _workbench.docContainer)
+				return;
+			
+			_tl.x = _workbench.mouseX - _offsetP.x;
+			_tl.y = _workbench.mouseY - _offsetP.y;
+			_tr.x = _tl.x + _workbench.selectedControl.width;
+			_tr.y = _tl.y;
+			_bl.x = _tl.x;
+			_bl.y = _tl.y + _workbench.selectedControl.height;
+			_br.x = _tr.x;
+			_br.y = _bl.y;
+			moveControl();
+			drawSelectBox();
 		}
 		
 		protected function onBRChanged(e:Event):void
 		{
-			if (_controlKey && _workbench.selectedControl != _workbench.docContainer)
-			{
-				_tl.x = _br.x - _workbench.selectedControl.width;
-				_tl.y = _br.y - _workbench.selectedControl.height;
-				
-				_tr.x = _br.x;
-				_tr.y = _tl.y;
-				
-				_bl.x = _tl.x;
-				_bl.y = _br.y;
-				
-				moveControl();
-				return;
-			}
-			
 			if (_br.x <= _bl.x)
 				return;
 			
@@ -81,25 +98,11 @@ package com.macro.gUI.editor.work
 			_tr.x = _br.x;
 			_bl.y = _br.y;
 			resizeControl();
+			drawSelectBox();
 		}
 		
 		protected function onBLChanged(e:Event):void
 		{
-			if (_controlKey && _workbench.selectedControl != _workbench.docContainer)
-			{
-				_tl.x = _bl.x;
-				_tl.y = _bl.y - _workbench.selectedControl.height;
-				
-				_tr.x = _bl.x + _workbench.selectedControl.width;
-				_tr.y = _tl.y;
-				
-				_br.x = _tr.x;
-				_br.y = _bl.y;
-				
-				moveControl();
-				return;
-			}
-			
 			if (_bl.x >= _br.x)
 				return;
 			
@@ -118,25 +121,11 @@ package com.macro.gUI.editor.work
 				_br.y = _bl.y;
 			}
 			resizeControl();
+			drawSelectBox();
 		}
 		
 		protected function onTRChanged(e:Event):void
 		{
-			if (_controlKey && _workbench.selectedControl != _workbench.docContainer)
-			{
-				_tl.x = _tr.x - _workbench.selectedControl.width;
-				_tl.y = _tr.y;
-				
-				_bl.x = _tl.x;
-				_bl.y = _tr.y + _workbench.selectedControl.height;
-				
-				_br.x = _tr.x;
-				_br.y = _bl.y;
-				
-				moveControl();
-				return;
-			}
-			
 			if (_tr.x <= _tl.x)
 				return;
 			
@@ -155,25 +144,11 @@ package com.macro.gUI.editor.work
 				_tr.y = _tl.y;
 			}
 			resizeControl();
+			drawSelectBox();
 		}
 		
 		protected function onTLChanged(e:Event):void
 		{
-			if (_controlKey && _workbench.selectedControl != _workbench.docContainer)
-			{
-				_tr.x = _tl.x + _workbench.selectedControl.width;
-				_tr.y = _tl.y;
-				
-				_bl.x = _tl.x;
-				_bl.y = _tl.y + _workbench.selectedControl.height;
-				
-				_br.x = _tr.x;
-				_br.y = _bl.y;
-				
-				moveControl();
-				return;
-			}
-			
 			if (_tl.x >= _tr.x)
 				return;
 			
@@ -192,6 +167,7 @@ package com.macro.gUI.editor.work
 				_tl.y = _tr.y;
 			}
 			resizeControl();
+			drawSelectBox();
 		}
 		
 		private function resizeControl():void
@@ -204,6 +180,13 @@ package com.macro.gUI.editor.work
 			var p:Point = _workbench.selectedControl.parent.globalToLocal(new Point(_tl.x, _tl.y));
 			_workbench.selectedControl.x = p.x - _workbench.selectedControl.parent.margin.left;
 			_workbench.selectedControl.y = p.y - _workbench.selectedControl.parent.margin.top;
+		}
+		
+		private function drawSelectBox():void
+		{
+			this.graphics.clear();
+			this.graphics.beginFill(0, 0.3);
+			this.graphics.drawRect(_tl.x, _tl.y, _br.x - _bl.x, _br.y - _tr.y);
 		}
 		
 		
@@ -224,6 +207,8 @@ package com.macro.gUI.editor.work
 					this.removeChild(_bl);
 				if (_br.parent == this)
 					this.removeChild(_br);
+				
+				this.graphics.clear();
 			}
 			else
 			{
@@ -244,6 +229,8 @@ package com.macro.gUI.editor.work
 				this.addChild(_tr);
 				this.addChild(_bl);
 				this.addChild(_br);
+				
+				drawSelectBox();
 			}
 		}
 	}

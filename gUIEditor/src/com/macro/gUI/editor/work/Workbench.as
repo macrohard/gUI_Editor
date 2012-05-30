@@ -178,6 +178,9 @@ package com.macro.gUI.editor.work
 				ic.y = p.y - c.margin.top;
 				c.addChild(ic);
 			}
+			
+			selectedControl = ic;
+			_cgroup.select();
 		}
 		
 		
@@ -214,6 +217,9 @@ package com.macro.gUI.editor.work
 			if (docContainer == null)
 				return;
 
+			selectedControl = docContainer;
+			_cgroup.select();
+			
 			GameUI.uiManager.stage.addChild(docContainer);
 			unsaved = true;
 		}

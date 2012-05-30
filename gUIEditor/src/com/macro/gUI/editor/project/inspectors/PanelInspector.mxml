@@ -6,6 +6,7 @@
 						  width="100%" height="120" implements="com.macro.gUI.editor.project.inspectors.IInspector">
 	<fx:Script>
 		<![CDATA[
+			import com.macro.gUI.containers.Panel;
 			import com.macro.gUI.core.IControl;
 			
 			import mx.controls.Menu;
@@ -13,7 +14,7 @@
 			public function getControl(xml:XML=null):IControl
 			{
 				// TODO Auto Generated method stub
-				return null;
+				return new Panel();
 			}
 			
 			public function getMenu():Menu

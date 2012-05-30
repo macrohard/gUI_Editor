@@ -46,6 +46,7 @@
 			{
 				var xml:XML = ComponentsPanel.configXML[2];
 				cmbBase.dataProvider = new XMLListCollection(xml.item);
+				cmbBase.selectedIndex = 0;
 				focusManager.setFocus(txtName);
 			}
 			

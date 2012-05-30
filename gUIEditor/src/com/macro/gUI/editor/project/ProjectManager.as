@@ -245,6 +245,9 @@ package com.macro.gUI.editor.project
 
 		public function createDoc(name:String, base:String):void
 		{
+			workbench.close();
+			workFile = null;
+			
 			workbench.create(base);
 			if (name.substr(name.lastIndexOf(".")) != ".xml")
 				name += ".xml";

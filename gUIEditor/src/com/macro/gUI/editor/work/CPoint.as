@@ -26,13 +26,13 @@ package com.macro.gUI.editor.work
 			this.addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
 		}
 		
-		protected function onAddedToStage(event:Event):void
+		protected function onAddedToStage(e:Event):void
 		{
 			this.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDownHandler);
 			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUpHandler);
 		}
 		
-		protected function onRemovedFromStage(event:Event):void
+		protected function onRemovedFromStage(e:Event):void
 		{
 			this.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDownHandler);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUpHandler);
